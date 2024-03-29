@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import time
@@ -15,6 +16,9 @@ from ddpg_critic import Critic
 from stable_baselines3.common.buffers import ReplayBuffer
 from torch.utils.tensorboard import SummaryWriter
 
+with open("rl-algos/config.json", "r") as file:
+    config = json.load(file)
+
 os.environ["MUJOCO_GL"] = "egl"
 
 
@@ -28,7 +32,7 @@ class Args:
     """if toggled, `torch.backends.cudnn.deterministic=False`"""
     cuda: bool = True
     """if toggled, cuda will be enabled by default"""
-    track: bool = False
+    track: bool = True
     """if toggled, this experiment will be tracked with Weights and Biases"""
     wandb_project_name: str = "cleanRL"
     """the wandb's project name"""
@@ -37,9 +41,9 @@ class Args:
     capture_video: bool = True
     """whether to capture videos of the agent performances (check out `videos` folder)"""
 
-    env_id: str = "SimpleClimateBiasCorrection-v0"
+    env_id: str = config["env_id"]
     """the environment id of the environment"""
-    total_timesteps: int = int(5e4) + 1  # int(1e6) + 1
+    total_timesteps: int = config["total_timesteps"]
     """total timesteps of the experiments"""
     learning_rate: float = 3e-4
     """the learning rate of the optimizer"""
@@ -53,7 +57,7 @@ class Args:
     """the batch size of sample from the reply memory"""
     exploration_noise: float = 0.1
     """the scale of exploration noise"""
-    learning_starts: int = 1e3
+    learning_starts: int = config["learning_starts"]
     """timestep to start learning"""
     policy_frequency: int = 2
     """the frequency of training policy (delayed)"""
@@ -139,7 +143,7 @@ start_time = time.time()
 
 # 1. start the game
 obs, _ = envs.reset(seed=args.seed)
-for global_step in range(args.total_timesteps):
+for global_step in range(1, args.total_timesteps + 1):
     # 2. retrieve action(s)
     if global_step < args.learning_starts:
         actions = np.array(

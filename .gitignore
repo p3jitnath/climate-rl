@@ -175,3 +175,4 @@ cython_debug/
 runs/
 videos/
 *.out
+wandb/

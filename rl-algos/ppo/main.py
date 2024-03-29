@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import time
@@ -13,6 +14,9 @@ import tyro
 from ppo_agent import Agent
 from torch.utils.tensorboard import SummaryWriter
 
+with open("rl-algos/config.json", "r") as file:
+    config = json.load(file)
+
 os.environ["MUJOCO_GL"] = "egl"
 
 
@@ -26,7 +30,7 @@ class Args:
     """if toggled, `torch.backends.cudnn.deterministic=False`"""
     cuda: bool = True
     """if toggled, cuda will be enabled by default"""
-    track: bool = False
+    track: bool = True
     """if toggled, this experiment will be tracked with Weights and Biases"""
     wandb_project_name: str = "cleanRL"
     """the wandb's project name"""
@@ -41,9 +45,9 @@ class Args:
     hf_entity: str = ""
     """the user or org name of the model repository from the Hugging Face Hub"""
 
-    env_id: str = "SimpleClimateBiasCorrection-v0"
+    env_id: str = config["env_id"]
     """the id of the environment"""
-    total_timesteps: int = int(5e4) + 1  # int(1e6) + 1
+    total_timesteps: int = config["total_timesteps"]
     """total timesteps of the experiments"""
     learning_rate: float = 3e-4
     """the learning rate of the optimizer"""

@@ -1,8 +1,10 @@
+import json
 import os
 import random
 import time
 from dataclasses import dataclass
 
+import climate_envs
 import gymnasium as gym
 import numpy as np
 import torch
@@ -12,6 +14,9 @@ from sac_actor import Actor
 from stable_baselines3.common.buffers import ReplayBuffer
 from torch.utils.tensorboard import SummaryWriter
 from tqc_quantile_critic import QuantileCritics
+
+with open("rl-algos/config.json", "r") as file:
+    config = json.load(file)
 
 os.environ["MUJOCO_GL"] = "egl"
 
@@ -41,7 +46,7 @@ class Args:
     """if toggled, `torch.backends.cudnn.deterministic=False`"""
     cuda: bool = True
     """if toggled, cuda will be enabled by default"""
-    track: bool = False
+    track: bool = True
     """if toggled, this experiment will be tracked with Weights and Biases"""
     wandb_project_name: str = "cleanRL"
     """the wandb's project name"""
@@ -50,9 +55,9 @@ class Args:
     capture_video: bool = True
     """whether to capture videos of the agent performances (check out `videos` folder)"""
 
-    env_id: str = "HalfCheetah-v4"
+    env_id: str = config["env_id"]
     """the id of the environment"""
-    total_timesteps: int = int(1e6) + 1
+    total_timesteps: int = config["total_timesteps"]
     """total timesteps of the experiments"""
     buffer_size: int = int(1e6)
     """the replay memory buffer size"""
@@ -72,7 +77,7 @@ class Args:
     """number of quantiles to drop"""
     n_quantiles_to_drop: int = 0
     """number of quantiles to drop"""
-    learning_starts: int = int(25e3)
+    learning_starts: int = config["learning_starts"]
     """timestep to start learning"""
     actor_adam_lr: float = 3e-4
     """the learning rate of the policy network optimizer"""
@@ -206,7 +211,7 @@ start_time = time.time()
 
 # 1. start the game
 obs, _ = envs.reset(seed=args.seed)
-for global_step in range(args.total_timesteps):
+for global_step in range(1, args.total_timesteps + 1):
     # 2. retrieve action(s)
     if global_step < args.learning_starts:
         actions = np.array(

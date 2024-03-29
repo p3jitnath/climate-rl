@@ -42,6 +42,10 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
         self.screen = None
         self.clock = None
 
+        self.max_physics_temperature = 380
+        self.target_physics_temperature = 321.75
+        self.min_physics_temperature = 273.15
+
         # Define action and observation spaces
         self.action_space = spaces.Box(
             low=-self.max_heating_rate,
@@ -61,21 +65,6 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
         )
         self.render_mode = render_mode
 
-        # self.seed()
-
-    # def seed(self, seed=None):
-    #     """
-    #     Seeds the environment's random number generator.
-
-    #     Args:
-    #         seed (int): Seed for the random number generator.
-
-    #     Returns:
-    #         list[int]: List containing the seed used.
-    #     """
-    #     self.np_random, seed = seeding.np_random(seed)
-    #     return [seed]
-
     def step(self, u):
         """
         Performs one step in the environment using the action `u`.
@@ -93,8 +82,12 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
         u = np.clip(u, -self.max_heating_rate, self.max_heating_rate)[0]
 
         # Calculate new temperature
-        target_temperature = (321.75 - 273.15) / 100
-        physics_temperature = (380.0 - 273.15) / 100
+        target_temperature = (
+            self.target_physics_temperature - self.min_physics_temperature
+        ) / 100
+        physics_temperature = (
+            self.max_physics_temperature - self.min_physics_temperature
+        ) / 100
         new_temperature = (
             temperature
             + u
@@ -127,7 +120,9 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
             np.array: The initial observation.
         """
         super().reset(seed=seed)
-        self.state = np.array([(300 - 273) / 100])  # Starting temperature
+        self.state = np.array(
+            [(300 - self.min_physics_temperature) / 100]
+        )  # Starting temperature
 
         if self.render_mode == "human":
             self._render_frame()
@@ -186,6 +181,7 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
             else:  # For rgb_array render mode, we don't need to display the window
                 self.screen = pygame.Surface((screen_width, screen_height))
             self.clock = pygame.time.Clock()
+            self.font = pygame.font.SysFont("Arial", 16)  # Initialize the font
 
         self.screen.fill((255, 255, 255))  # Fill the background with white
 
@@ -220,20 +216,57 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
 
         # Calculate the position for the target mark line
         target_ratio = (321.75 - 273.15) / (380 - 273.15)
-        half_mark_y = (screen_height / 2) - (thermometer_height / 2)
-        half_mark_y += thermometer_height * target_ratio
+        target_mark_y = (screen_height / 2) - (thermometer_height / 2)
+        target_mark_y += thermometer_height * target_ratio
 
-        half_mark_start = (screen_width / 2) - (thermometer_width / 2)
-        half_mark_end = (screen_width / 2) + (thermometer_width / 2)
+        target_mark_start = (screen_width / 2) - (thermometer_width / 2)
+        target_mark_end = (screen_width / 2) + (thermometer_width / 2)
 
         # Draw the target mark line
         pygame.draw.line(
             self.screen,
             (0, 0, 0),
-            (half_mark_start, half_mark_y),
-            (half_mark_end, half_mark_y),
-            2,
+            (target_mark_start, target_mark_y),
+            (target_mark_end, target_mark_y),
+            5,
         )  # Black line
+
+        # Draw temperature markings every x degrees from 273.15 K to 380 K
+        min_temp_k = self.min_physics_temperature
+        max_temp_k = self.max_physics_temperature
+        temp_range_k = max_temp_k - min_temp_k
+        marking_spacing_k = 25  # Every x degrees
+
+        for temp_k in range(
+            int(min_temp_k), int(max_temp_k) + 1, marking_spacing_k
+        ):
+            # Normalize the temperature to [0, 1] for the current scale
+            normalized_temp = (temp_k - min_temp_k) / temp_range_k
+            # Calculate the Y position for the marking based on the normalized temperature
+            mark_y = (
+                (screen_height / 2)
+                + (thermometer_height / 2)
+                - (normalized_temp * thermometer_height)
+            )
+
+            # Draw the marking line
+            pygame.draw.line(
+                self.screen,
+                (0, 0, 0),
+                ((screen_width / 2) - (thermometer_width / 2) - 10, mark_y),
+                ((screen_width / 2) - (thermometer_width / 2), mark_y),
+                2,
+            )
+
+            # Render the temperature text
+            temp_text = self.font.render(f"{temp_k} K", True, (0, 0, 0))
+            self.screen.blit(
+                temp_text,
+                (
+                    (screen_width / 2) - (thermometer_width / 2) - 60,
+                    mark_y - 10,
+                ),
+            )
 
         # Display Thermometer
         if self.render_mode == "human":
