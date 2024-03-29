@@ -3,6 +3,7 @@ import random
 import time
 from dataclasses import dataclass
 
+import climate_envs
 import gymnasium as gym
 import numpy as np
 import torch
@@ -36,9 +37,9 @@ class Args:
     capture_video: bool = True
     """whether to capture videos of the agent performances (check out `videos` folder)"""
 
-    env_id: str = "HalfCheetah-v4"
+    env_id: str = "SimpleClimateBiasCorrection-v0"
     """the environment id of the environment"""
-    total_timesteps: int = int(1e6) + 1
+    total_timesteps: int = int(5e4) + 1  # int(1e6) + 1
     """total timesteps of the experiments"""
     learning_rate: float = 3e-4
     """the learning rate of the optimizer"""
@@ -52,7 +53,7 @@ class Args:
     """the batch size of sample from the reply memory"""
     exploration_noise: float = 0.1
     """the scale of exploration noise"""
-    learning_starts: int = 25e3
+    learning_starts: int = 1e3
     """timestep to start learning"""
     policy_frequency: int = 2
     """the frequency of training policy (delayed)"""

@@ -3,6 +3,7 @@ import random
 import time
 from dataclasses import dataclass
 
+import climate_envs
 import gymnasium as gym
 import numpy as np
 import torch
@@ -40,15 +41,15 @@ class Args:
     hf_entity: str = ""
     """the user or org name of the model repository from the Hugging Face Hub"""
 
-    env_id: str = "HalfCheetah-v4"
+    env_id: str = "SimpleClimateBiasCorrection-v0"
     """the id of the environment"""
-    total_timesteps: int = int(1e6) + 1
+    total_timesteps: int = int(5e4) + 1  # int(1e6) + 1
     """total timesteps of the experiments"""
     learning_rate: float = 3e-4
     """the learning rate of the optimizer"""
     num_envs: int = 1
     """the number of sequential game environments"""
-    num_steps: int = 2048
+    num_steps: int = 200
     """the number of steps to run in each environment per policy rollout"""
     anneal_lr: bool = True
     """Toggle learning rate annealing for policy and value networks"""
