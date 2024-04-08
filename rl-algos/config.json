@@ -1,8 +1,8 @@
 {
     "env_id": "SimpleClimateBiasCorrection-v0",
     "max_episode_steps": 200,
-    "n_episodes": 250,
+    "n_episodes": 300,
     "warmup_episodes": 5,
-    "total_timesteps": 50000,
+    "total_timesteps": 60000,
     "learning_starts": 1000
 }
