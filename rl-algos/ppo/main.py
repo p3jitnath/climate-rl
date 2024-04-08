@@ -18,6 +18,7 @@ with open("rl-algos/config.json", "r") as file:
     config = json.load(file)
 
 os.environ["MUJOCO_GL"] = "egl"
+date = time.strftime("%Y-%m-%d", time.gmtime(time.time()))
 
 
 @dataclass
@@ -36,6 +37,8 @@ class Args:
     """the wandb's project name"""
     wandb_entity: str = "personal-p3jitnath"
     """the entity (team) of wandb's project"""
+    wandb_group: str = date
+    """the group name under wandb's project"""
     capture_video: bool = True
     """whether to capture videos of the agent performances (check out `videos` folder)"""
     save_model: bool = False
@@ -125,6 +128,7 @@ if args.track:
     wandb.init(
         project=args.wandb_project_name,
         entity=args.wandb_entity,
+        group=args.wandb_group,
         sync_tensorboard=True,
         config=vars(args),
         name=run_name,
