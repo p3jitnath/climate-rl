@@ -212,7 +212,7 @@ for global_step in range(1, args.total_timesteps + 1):
         qf1_a_values = qf1(data.observations, data.actions).view(-1)
         qf1_loss = F.mse_loss(qf1_a_values, target_q_values)
 
-        # 5b. Update the critic
+        # 5b. update the critic
         q_optimizer.zero_grad()
         qf1_loss.backward()
         q_optimizer.step()

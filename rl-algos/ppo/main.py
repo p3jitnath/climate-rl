@@ -56,7 +56,7 @@ class Args:
     """the learning rate of the optimizer"""
     num_envs: int = 1
     """the number of sequential game environments"""
-    num_steps: int = 200
+    num_steps: int = config["max_episode_steps"]
     """the number of steps to run in each environment per policy rollout"""
     anneal_lr: bool = True
     """Toggle learning rate annealing for policy and value networks"""
@@ -188,7 +188,6 @@ next_obs, _ = envs.reset(seed=args.seed)
 next_obs = torch.Tensor(next_obs).to(device)
 next_done = torch.zeros(args.num_envs).to(device)
 
-
 for iteration in range(1, args.num_iterations + 1):
     if args.anneal_lr:
         frac = 1.0 - (iteration - 1.0) / args.num_iterations
@@ -233,6 +232,7 @@ for iteration in range(1, args.num_iterations + 1):
                         info["episode"]["l"],
                         global_step,
                     )
+                break
 
     # 4. bootstrap value if not done
     with torch.no_grad():

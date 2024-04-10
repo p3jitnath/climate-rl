@@ -5,11 +5,11 @@ import torch.nn.functional as F
 
 
 class Critic(nn.Module):
-    def __init__(self, env):
+    def __init__(self, envs):
         super().__init__()
         self.fc1 = nn.Linear(
-            np.array(env.single_observation_space.shape).prod()
-            + np.prod(env.single_action_space.shape),
+            np.array(envs.single_observation_space.shape).prod()
+            + np.prod(envs.single_action_space.shape),
             256,
         )
         self.fc2 = nn.Linear(256, 256)
