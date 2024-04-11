@@ -119,6 +119,7 @@ assert isinstance(
 
 actor = Actor(envs).to(device)
 optimizer = optim.Adam(actor.parameters(), lr=args.learning_rate, eps=1e-5)
+envs.single_observation_space.dtype = np.float32
 
 
 # util function to calculate the discounted normalized returns
