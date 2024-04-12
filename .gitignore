@@ -176,3 +176,4 @@ runs/
 videos/
 *.out
 wandb/
+slurm/

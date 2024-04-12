@@ -83,7 +83,7 @@ class Args:
     """coefficient of the value function"""
     max_grad_norm: float = 0.5
     """the maximum norm for the gradient clipping"""
-    target_kl: Optional[float] = None
+    target_kl: Optional[float] = 0.01
     """the target KL divergence threshold"""
 
 

@@ -2,14 +2,15 @@
 
 # Check if a command-line argument is provided
 if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <folder_name>"
+    echo "Usage: $0 <tag_name>"
     exit 1
 fi
 
-# Set the folder name from the first argument
-FOLDER_NAME=$1
+# Set the tag name from the first argument
+TAG_NAME=$1
 
-# Remove the specified folder from each directory
-rm -rf "runs/$FOLDER_NAME"
-rm -rf "videos/$FOLDER_NAME"
-rm -rf "wandb/$FOLDER_NAME"
+# Remove the specified tag from each directory
+rm -rf "runs/$TAG_NAME"*
+rm -rf "videos/$TAG_NAME"*
+rm -rf "wandb/$TAG_NAME"*
+rm -rf slurm/*.log
