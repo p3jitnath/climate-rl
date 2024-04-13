@@ -34,7 +34,6 @@ fi
 BASE_DIR="/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 
 # 3. List of algorithms
-# ALGOS=("trpo" "ppo") # "sac" "td3" "tqc" "reinforce" "dpg" "ddpg" "ppo" "trpo"
 ALGOS=("ddpg" "dpg" "ppo" "reinforce" "sac" "td3" "trpo" "tqc")
 
 # 4. Get the current date and time in YYYY-MM-DD_HH-MM format
@@ -46,14 +45,13 @@ for ALGO in "${ALGOS[@]}"; do
     # Submit each algorithm run as a separate Slurm job
     sbatch <<EOT
 #!/bin/bash
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=pritthijit.nath.slurm@gmail.com
+
 #SBATCH --job-name=pn341_${ALGO}_${TAG}
 #SBATCH --output=$BASE_DIR/slurm/${ALGO}_${TAG}_%j.out
 #SBATCH --error=$BASE_DIR/slurm/${ALGO}_${TAG}_%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=2
 #SBATCH --gres=gpu:1
 #SBATCH --time=24:00:00
 #SBATCH --partition=orchid
@@ -61,6 +59,7 @@ for ALGO in "${ALGOS[@]}"; do
 
 conda activate venv
 cd "$BASE_DIR"
-python "$BASE_DIR/rl-algos/$ALGO/main.py" --wandb-group="$WANDB_GROUP" --no-track
+export WANDB_MODE=offline
+python "$BASE_DIR/rl-algos/$ALGO/main.py" --wandb-group "$WANDB_GROUP"
 EOT
 done

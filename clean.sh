@@ -12,5 +12,5 @@ TAG_NAME=$1
 # Remove the specified tag from each directory
 rm -rf "runs/$TAG_NAME"*
 rm -rf "videos/$TAG_NAME"*
-rm -rf "wandb/$TAG_NAME"*
-rm -rf slurm/*.log
+rm -rf "slurm"/*.err
+rm -rf "slurm"/*.out
