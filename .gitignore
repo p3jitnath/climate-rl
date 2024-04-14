@@ -171,6 +171,7 @@ cython_debug/
 .ruff_cache
 *.zip
 *.gif
+*.tmp
 
 runs/
 videos/

@@ -2,7 +2,9 @@ import json
 
 from gymnasium.envs.registration import register
 
-with open("rl-algos/config.json", "r") as file:
+BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
+
+with open(f"{BASE_DIR}/rl-algos/config.json", "r") as file:
     config = json.load(file)
 
 register(

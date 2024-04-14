@@ -14,7 +14,11 @@ import tyro
 from reinforce_actor import Actor
 from torch.utils.tensorboard import SummaryWriter
 
-with open("rl-algos/config.json", "r") as file:
+from tune.utils.no_op_summary_writer import NoOpSummaryWriter
+
+BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
+
+with open(f"{BASE_DIR}/rl-algos/config.json", "r") as file:
     config = json.load(file)
 
 os.environ["MUJOCO_GL"] = "egl"
@@ -56,6 +60,17 @@ class Args:
     gamma: float = 0.99
     """the discount factor gamma"""
 
+    optimise: bool = False
+    """whether to modify output for hyperparameter optimisation"""
+    write_to_file: str = ""
+    """filename to write last episode return"""
+
+    def __post_init__(self):
+        if self.optimise:
+            self.track = False
+            self.capture_video = False
+            self.total_timesteps = config["opt_timesteps"]
+
 
 def make_env(env_id, seed, idx, capture_video, run_name):
     def thunk():
@@ -92,7 +107,12 @@ if args.track:
         save_code=True,
     )
 
-writer = SummaryWriter(f"runs/{run_name}")
+
+if args.optimise:
+    writer = NoOpSummaryWriter()
+else:
+    writer = SummaryWriter(f"runs/{run_name}")
+
 writer.add_text(
     "hyperparameters",
     "|param|value|\n|-|-|\n%s"
@@ -107,6 +127,7 @@ torch.backends.cudnn.deterministic = args.torch_deterministic
 device = torch.device(
     "cuda" if torch.cuda.is_available() and args.cuda else "cpu"
 )
+print(f"device: {device}")
 
 # 0. env setup
 envs = gym.vector.SyncVectorEnv(
@@ -186,6 +207,20 @@ for episode in range(args.num_episodes):
         int(global_step / (time.time() - start_time)),
         global_step,
     )
+
+    if episode == args.num_episodes - 1:
+        if args.write_to_file:
+            episodic_return = info["episode"]["r"][0]
+            with open(args.write_to_file, "wb") as file:
+                import pickle
+
+                pickle.dump(
+                    {
+                        "num_episodes": args.num_episodes,
+                        "last_episodic_return": episodic_return,
+                    },
+                    file,
+                )
 
 envs.close()
 writer.close()
