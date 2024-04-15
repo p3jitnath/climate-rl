@@ -1,14 +1,25 @@
+import json
 import os
 import pickle
 import random
 import subprocess
 import time
+from dataclasses import dataclass
 
 import ray
+import tyro
 from ray import train, tune
 from ray.tune.search.optuna import OptunaSearch
 
+from tune.config import config
+
 BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
+
+
+@dataclass
+class Args:
+    algo: str = "td3"
+    """name of rl-algo"""
 
 
 def objective(config):
@@ -33,26 +44,28 @@ def objective(config):
         )
 
 
-search_space = {
-    "learning_rate": tune.loguniform(1e-4, 1e-2),
-    "gamma": tune.uniform(0.89, 0.99),
-}
+args = tyro.cli(Args)
+date = time.strftime("%Y-%m-%d", time.gmtime(time.time()))
+
+search_space = config[args.algo]
 search_alg = OptunaSearch(seed=42)
 
-ray.init(
-    runtime_env={
-        "working_dir": BASE_DIR,
-        "conda": "venv",
-    },
+ray_kwargs = {}
+ray_kwargs["runtime_env"] = {"working_dir": BASE_DIR, "conda": "venv"}
+if os.environ["ip_head"]:
+    ray_kwargs["address"] = os.environ["ip_head"]
+ray.init(**ray_kwargs)
+
+trainable_with_resources = tune.with_resources(
+    objective, resources={"cpu": 2, "gpu": 1}
 )
-trainable_with_resources = tune.with_resources(objective, resources={"gpu": 1})
 tuner = tune.Tuner(
     objective,
     tune_config=tune.TuneConfig(
         metric="last_episodic_return",
         mode="max",
         search_alg=search_alg,
-        num_samples=10,
+        num_samples=2,
         max_concurrent_trials=2,
     ),
     param_space={
@@ -62,3 +75,8 @@ tuner = tune.Tuner(
 )
 results = tuner.fit()
 print("Best config is:", results.get_best_result().config)
+
+with open(
+    f"{BASE_DIR}/tune/results/best_{args.algo}_config_{date}.json", "w"
+) as file:
+    json.dump(results, file, ensure_ascii=False, indent=4)
