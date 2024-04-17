@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import sys
 import time
 from dataclasses import dataclass
 
@@ -14,9 +15,10 @@ import tyro
 from reinforce_actor import Actor
 from torch.utils.tensorboard import SummaryWriter
 
-from tune.utils.no_op_summary_writer import NoOpSummaryWriter
-
 BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
+sys.path.append(BASE_DIR)
+
+from param_tune.utils.no_op_summary_writer import NoOpSummaryWriter
 
 with open(f"{BASE_DIR}/rl-algos/config.json", "r") as file:
     config = json.load(file)

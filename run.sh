@@ -60,6 +60,6 @@ for ALGO in "${ALGOS[@]}"; do
 conda activate venv
 cd "$BASE_DIR"
 export WANDB_MODE=offline
-python "$BASE_DIR/rl-algos/$ALGO/main.py" --wandb-group "$WANDB_GROUP"
+python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --wandb-group "$WANDB_GROUP"
 EOT
 done

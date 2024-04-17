@@ -1,0 +1,12 @@
+{
+    "scaling_config": {
+        "trainer_resources": null,
+        "num_workers": null,
+        "use_gpu": true,
+        "resources_per_worker": null,
+        "placement_strategy": "PACK"
+    },
+    "params": {
+        "learning_rate": 0.003807947176588889
+    }
+}

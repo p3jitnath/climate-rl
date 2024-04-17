@@ -3,6 +3,7 @@ import os
 import pickle
 import random
 import subprocess
+import sys
 import time
 from dataclasses import dataclass
 
@@ -11,9 +12,10 @@ import tyro
 from ray import train, tune
 from ray.tune.search.optuna import OptunaSearch
 
-from tune.config import config
-
 BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
+sys.path.append(BASE_DIR)
+
+from param_tune.config import config
 
 
 @dataclass
@@ -26,11 +28,11 @@ def objective(config):
     optuna_id = random.randint(1000000000, 9999999999)
     algo = "reinforce"
     tmp_file = f"{algo}_{optuna_id}.tmp"
-    results_path = f"{BASE_DIR}/tune/tmp/{tmp_file}"
+    results_path = f"{BASE_DIR}/param_tune/tmp/{tmp_file}"
 
     cmd = f"""python {BASE_DIR}/rl-algos/{algo}/main.py --optimise --write-to-file {results_path} """
     for param in config["params"]:
-        cmd += f"""--{param} {config['params'][{param}]} """
+        cmd += f"""--{param} {config['params'][param]} """
 
     subprocess.run(cmd.split())
 
@@ -56,9 +58,6 @@ if os.environ["ip_head"]:
     ray_kwargs["address"] = os.environ["ip_head"]
 ray.init(**ray_kwargs)
 
-trainable_with_resources = tune.with_resources(
-    objective, resources={"cpu": 2, "gpu": 1}
-)
 tuner = tune.Tuner(
     objective,
     tune_config=tune.TuneConfig(
@@ -66,7 +65,7 @@ tuner = tune.Tuner(
         mode="max",
         search_alg=search_alg,
         num_samples=2,
-        max_concurrent_trials=2,
+        max_concurrent_trials=1,
     ),
     param_space={
         "scaling_config": train.ScalingConfig(use_gpu=True),
@@ -74,9 +73,10 @@ tuner = tune.Tuner(
     },
 )
 results = tuner.fit()
-print("Best config is:", results.get_best_result().config)
+best_config = results.get_best_result().config
+print("Best config is:", best_config)
 
 with open(
-    f"{BASE_DIR}/tune/results/best_{args.algo}_config_{date}.json", "w"
+    f"{BASE_DIR}/param_tune/results/best_{args.algo}_config_{date}.json", "w"
 ) as file:
-    json.dump(results, file, ensure_ascii=False, indent=4)
+    json.dump(best_config, file, ensure_ascii=False, indent=4)
