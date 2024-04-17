@@ -178,3 +178,5 @@ videos/
 *.out
 wandb/
 slurm/
+
+*.json

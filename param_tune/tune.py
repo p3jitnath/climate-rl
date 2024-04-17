@@ -25,19 +25,22 @@ class Args:
 
 
 def objective(config):
-    optuna_id = random.randint(1000000000, 9999999999)
-    algo = "reinforce"
-    tmp_file = f"{algo}_{optuna_id}.tmp"
+    study_id = random.randint(1000000000, 9999999999)
+    tmp_file = f"{args.algo}_{study_id}.tmp"
     results_path = f"{BASE_DIR}/param_tune/tmp/{tmp_file}"
 
-    cmd = f"""python {BASE_DIR}/rl-algos/{algo}/main.py --optimise --write-to-file {results_path} """
+    cmd = f"""python -u {BASE_DIR}/rl-algos/{args.algo}/main.py --optimise --write-to-file {results_path} """
     for param in config["params"]:
         cmd += f"""--{param} {config['params'][param]} """
 
     subprocess.run(cmd.split())
 
+    counter = 0
     while not os.path.exists(results_path):
-        time.sleep(1)
+        time.sleep(5)
+        counter += 1
+        if counter >= 12:
+            raise RuntimeError("An error has occured.")
 
     with open(results_path, "rb") as f:
         results_dict = pickle.load(f)
@@ -58,14 +61,16 @@ if os.environ["ip_head"]:
     ray_kwargs["address"] = os.environ["ip_head"]
 ray.init(**ray_kwargs)
 
+trainable_with_resources = tune.with_resources(objective, resources={"gpu": 1})
+
 tuner = tune.Tuner(
-    objective,
+    trainable_with_resources,
     tune_config=tune.TuneConfig(
         metric="last_episodic_return",
         mode="max",
         search_alg=search_alg,
         num_samples=2,
-        max_concurrent_trials=1,
+        max_concurrent_trials=2,
     ),
     param_space={
         "scaling_config": train.ScalingConfig(use_gpu=True),

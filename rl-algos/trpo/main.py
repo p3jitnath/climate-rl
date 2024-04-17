@@ -2,6 +2,7 @@ import copy
 import json
 import os
 import random
+import sys
 import time
 from dataclasses import dataclass, field
 from typing import Optional
@@ -19,7 +20,12 @@ from trpo_actor import Actor
 from trpo_critic import Critic
 from trpo_utils import conjugate_gradient, fisher_vector_product, update_model
 
-with open("rl-algos/config.json", "r") as file:
+BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
+sys.path.append(BASE_DIR)
+
+from param_tune.utils.no_op_summary_writer import NoOpSummaryWriter
+
+with open(f"{BASE_DIR}/rl-algos/config.json", "r") as file:
     config = json.load(file)
 
 os.environ["MUJOCO_GL"] = "egl"
@@ -86,6 +92,17 @@ class Args:
     target_kl: Optional[float] = 0.01
     """the target KL divergence threshold"""
 
+    optimise: bool = False
+    """whether to modify output for hyperparameter optimisation"""
+    write_to_file: str = ""
+    """filename to write last episode return"""
+
+    def __post_init__(self):
+        if self.optimise:
+            self.track = False
+            self.capture_video = False
+            self.total_timesteps = config["opt_timesteps"]
+
 
 def make_env(env_id, idx, capture_video, run_name, gamma):
     def thunk():
@@ -135,7 +152,11 @@ if args.track:
         save_code=True,
     )
 
-writer = SummaryWriter(f"runs/{run_name}")
+if args.optimise:
+    writer = NoOpSummaryWriter()
+else:
+    writer = SummaryWriter(f"runs/{run_name}")
+
 writer.add_text(
     "hyperparameters",
     "|param|value|\n|-|-|\n%s"
@@ -150,6 +171,7 @@ torch.backends.cudnn.deterministic = args.torch_deterministic
 device = torch.device(
     "cuda" if torch.cuda.is_available() and args.cuda else "cpu"
 )
+print(f"device: {device}")
 
 # 0. env setup
 envs = gym.vector.SyncVectorEnv(
@@ -384,6 +406,20 @@ for iteration in range(1, num_iterations + 1):
         int(global_step / (time.time() - start_time)),
         global_step,
     )
+
+    if iteration == num_iterations:
+        if args.write_to_file:
+            episodic_return = info["episode"]["r"][0]
+            with open(args.write_to_file, "wb") as file:
+                import pickle
+
+                pickle.dump(
+                    {
+                        "timesteps": args.total_timesteps,
+                        "last_episodic_return": episodic_return,
+                    },
+                    file,
+                )
 
 envs.close()
 writer.close()

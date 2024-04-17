@@ -3,7 +3,7 @@
 #SBATCH --job-name=pn341_ray_slurm_optimise
 #SBATCH --output=/gws/nopw/j04/ai4er/users/pn341/climate-rl/slurm/ray_slurm_optimise.out
 #SBATCH --error=/gws/nopw/j04/ai4er/users/pn341/climate-rl/slurm/ray_slurm_optimise.err
-#SBATCH --nodes=2
+#SBATCH --nodes=3
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:1
@@ -14,6 +14,36 @@
 BASE_DIR=/gws/nopw/j04/ai4er/users/pn341/climate-rl
 
 set -x
+
+# 1a. Function to display usage
+usage() {
+    echo "Usage: sbatch $1 --algo <algo>"
+    exit 1
+}
+
+# 1b. Check if no arguments were passed
+if [ "$#" -eq 0 ]; then
+    usage
+fi
+
+# 1c. Parse command-line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --algo) # Extract the algo value
+            ALGO="$2"
+            shift 2
+            ;;
+        *) # Handle unknown option
+            usage
+            ;;
+    esac
+done
+
+# 1d. Check if ALGO is set
+if [ -z "$ALGO" ]; then
+    echo "Error: Algo is required."
+    usage
+fi
 
 # __doc_head_address_start__
 
@@ -51,10 +81,10 @@ srun --nodes=1 --ntasks=1 -w "$head_node" \
     ray start --head --node-ip-address="$head_node_ip" --port=$port \
     --num-cpus "${SLURM_CPUS_PER_TASK}" --num-gpus 1 --block &
 
-# # optional, though may be useful in certain versions of Ray < 1.0.
-sleep 20
+# optional, though may be useful in certain versions of Ray < 1.0.
+sleep 30
 
-# # number of nodes other than the head node
+# number of nodes other than the head node
 worker_num=$((SLURM_JOB_NUM_NODES - 1))
 
 for ((i = 1; i <= worker_num; i++)); do
@@ -63,7 +93,7 @@ for ((i = 1; i <= worker_num; i++)); do
     srun --nodes=1 --ntasks=1 -w "$node_i" \
         ray start --address "$ip_head" \
         --num-cpus "${SLURM_CPUS_PER_TASK}" --num-gpus 1 --block &
-    sleep 10
+    sleep 30
 done
 
-python $BASE_DIR/param_tune/tune.py --algo reinforce
+python -u $BASE_DIR/param_tune/tune.py --algo $ALGO

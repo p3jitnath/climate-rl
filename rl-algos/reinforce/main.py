@@ -163,9 +163,9 @@ start_time = time.time()
 obs, _ = envs.reset(seed=args.seed)
 args.num_episodes = args.total_timesteps // args.num_steps
 
-for episode in range(args.num_episodes):
+for episode in range(1, args.num_episodes + 1):
     log_probs, rewards = [], []
-    for step in range(args.num_steps):
+    for step in range(1, args.num_steps + 1):
         # 2. retrieve action(s)
         global_step += args.num_envs
         obs = torch.tensor(obs, dtype=torch.float32).to(device)
@@ -210,7 +210,7 @@ for episode in range(args.num_episodes):
         global_step,
     )
 
-    if episode == args.num_episodes - 1:
+    if episode == args.num_episodes:
         if args.write_to_file:
             episodic_return = info["episode"]["r"][0]
             with open(args.write_to_file, "wb") as file:
