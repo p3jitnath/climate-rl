@@ -1,11 +1,11 @@
 #!/bin/sh
 
 #SBATCH --job-name=pn341_ray_slurm_optimise
-#SBATCH --output=/gws/nopw/j04/ai4er/users/pn341/climate-rl/slurm/ray_slurm_optimise.out
-#SBATCH --error=/gws/nopw/j04/ai4er/users/pn341/climate-rl/slurm/ray_slurm_optimise.err
-#SBATCH --nodes=3
+#SBATCH --output=/gws/nopw/j04/ai4er/users/pn341/climate-rl/slurm/ray_slurm_%j.out
+#SBATCH --error=/gws/nopw/j04/ai4er/users/pn341/climate-rl/slurm/ray_slurm_%j.err
+#SBATCH --nodes=5
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
 #SBATCH --time=24:00:00
 #SBATCH --partition=orchid
@@ -79,7 +79,7 @@ echo "IP Head: $ip_head"
 echo "Starting HEAD at $head_node"
 srun --nodes=1 --ntasks=1 -w "$head_node" \
     ray start --head --node-ip-address="$head_node_ip" --port=$port \
-    --num-cpus "${SLURM_CPUS_PER_TASK}" --num-gpus 1 --block &
+    --num-cpus "${SLURM_CPUS_PER_TASK}" --include-dashboard=False --num-gpus 1 --block &
 
 # optional, though may be useful in certain versions of Ray < 1.0.
 sleep 30

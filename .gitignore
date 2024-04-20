@@ -179,4 +179,4 @@ videos/
 wandb/
 slurm/
 
-*.json
+*_run_*

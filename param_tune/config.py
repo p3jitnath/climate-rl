@@ -33,16 +33,18 @@ config["td3"] = {
 
 config["ppo"] = {
     "learning_rate": tune.uniform(1e-4, 1e-2),
-    "num_minibatches": tune.choice([64, 128]),
+    "num_minibatches": tune.choice([10, 20, 40, 50]),
     "update_epochs": tune.choice([x for x in range(1, 11)]),
     "clip_coef": tune.uniform(0.1, 0.3),
+    "max_grad_norm": tune.choice([0.5 + (0.1 * x) for x in range(0, 5)]),
 }
 
 config["trpo"] = {
     "learning_rate": tune.uniform(1e-4, 1e-2),
-    "num_minibatches": tune.choice([64, 128]),
+    "num_minibatches": tune.choice([10, 20, 40, 50]),
     "update_epochs": tune.choice([x for x in range(1, 11)]),
     "clip_coef": tune.uniform(0.1, 0.3),
+    "max_grad_norm": tune.choice([0.5 + (0.1 * x) for x in range(0, 5)]),
 }
 
 config["sac"] = {

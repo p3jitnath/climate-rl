@@ -14,4 +14,4 @@ rm -rf "runs/$TAG_NAME"*
 rm -rf "videos/$TAG_NAME"*
 rm -rf "slurm"/*.err
 rm -rf "slurm"/*.out
-rm -rf "tune/tmp"/*.tmp
+rm -rf "param_tune/tmp"/*.tmp

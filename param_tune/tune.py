@@ -20,8 +20,10 @@ from param_tune.config import config
 
 @dataclass
 class Args:
-    algo: str = "td3"
+    algo: str = "ddpg"
     """name of rl-algo"""
+    env_id: str = "v0-optim"
+    """name of the environment"""
 
 
 def objective(config):
@@ -61,27 +63,40 @@ if os.environ["ip_head"]:
     ray_kwargs["address"] = os.environ["ip_head"]
 ray.init(**ray_kwargs)
 
-trainable_with_resources = tune.with_resources(objective, resources={"gpu": 1})
+trainable = tune.with_resources(objective, resources={"cpu": 1, "gpu": 0.25})
 
-tuner = tune.Tuner(
-    trainable_with_resources,
-    tune_config=tune.TuneConfig(
-        metric="last_episodic_return",
-        mode="max",
-        search_alg=search_alg,
-        num_samples=2,
-        max_concurrent_trials=2,
-    ),
-    param_space={
-        "scaling_config": train.ScalingConfig(use_gpu=True),
-        "params": search_space,
-    },
-)
+RESULTS_DIR = f"{BASE_DIR}/param_tune/results/{args.env_id}"
+if not os.path.exists(RESULTS_DIR):
+    os.makedirs(RESULTS_DIR)
+
+storage_path = f"{RESULTS_DIR}/{args.algo}_run_{date}"
+
+if tune.Tuner.can_restore(storage_path):
+    tuner = tune.Tuner.restore(
+        storage_path, trainable=trainable, resume_errored=True
+    )
+else:
+    tuner = tune.Tuner(
+        trainable,
+        tune_config=tune.TuneConfig(
+            metric="last_episodic_return",
+            mode="max",
+            search_alg=search_alg,
+            num_samples=100,
+            max_concurrent_trials=20,
+        ),
+        param_space={
+            "scaling_config": train.ScalingConfig(use_gpu=True),
+            "params": search_space,
+        },
+        run_config=train.RunConfig(
+            storage_path=storage_path,
+            name=f"pn341_ray_slurm_{args.env_id}_{args.algo}",
+        ),
+    )
 results = tuner.fit()
-best_config = results.get_best_result().config
-print("Best config is:", best_config)
+best_result = results.get_best_result()
+print("Best metrics:", best_result.metrics)
 
-with open(
-    f"{BASE_DIR}/param_tune/results/best_{args.algo}_config_{date}.json", "w"
-) as file:
-    json.dump(best_config, file, ensure_ascii=False, indent=4)
+with open(f"{RESULTS_DIR}/best_{args.algo}_result_{date}.pkl", "wb") as file:
+    pickle.dump(best_result.metrics, file)

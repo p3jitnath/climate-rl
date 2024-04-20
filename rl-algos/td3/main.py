@@ -79,12 +79,29 @@ class Args:
     """whether to modify output for hyperparameter optimisation"""
     write_to_file: str = ""
     """filename to write last episode return"""
+    optim_group: str = ""
+    """folder name under results to load optimised set of params"""
 
     def __post_init__(self):
         if self.optimise:
             self.track = False
             self.capture_video = False
             self.total_timesteps = config["opt_timesteps"]
+
+        if self.optim_group:
+            algo = self.exp_name.split("_")[0]
+            with open(
+                f"{BASE_DIR}/param_tune/results/{self.optim_group}/best_results.json",
+                "r",
+            ) as file:
+                opt_params = {
+                    k: v
+                    for k, v in json.load(file)[algo].items()
+                    if k not in {"algo", "episodic_return", "date"}
+                }
+                for key, value in opt_params.items():
+                    if hasattr(self, key):
+                        setattr(self, key, value)
 
 
 def make_env(env_id, seed, idx, capture_video, run_name):
