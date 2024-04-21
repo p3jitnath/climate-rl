@@ -110,8 +110,6 @@ def make_env(env_id, seed, idx, capture_video, run_name):
 
 
 args = tyro.cli(Args)
-print(args)
-exit()
 run_name = f"{args.wandb_group}/{args.env_id}__{args.exp_name}__{args.seed}__{int(time.time())}"
 
 if args.track:
