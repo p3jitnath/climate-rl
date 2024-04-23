@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 import random
 import sys
 import time
@@ -68,6 +69,9 @@ class Args:
     """filename to write last episode return"""
     optim_group: str = ""
     """folder name under results to load optimised set of params"""
+
+    actor_layer_size: int = 128
+    """layer size for the actor network"""
 
     def __post_init__(self):
         if self.optimise:
@@ -157,7 +161,7 @@ assert isinstance(
     envs.single_action_space, gym.spaces.Box
 ), "only continuous action space is supported"
 
-actor = Actor(envs).to(device)
+actor = Actor(envs, args.actor_layer_size).to(device)
 optimizer = optim.Adam(actor.parameters(), lr=args.learning_rate, eps=1e-5)
 envs.single_observation_space.dtype = np.float32
 
@@ -231,8 +235,6 @@ for episode in range(1, args.num_episodes + 1):
         if args.write_to_file:
             episodic_return = info["episode"]["r"][0]
             with open(args.write_to_file, "wb") as file:
-                import pickle
-
                 pickle.dump(
                     {
                         "num_episodes": args.num_episodes,

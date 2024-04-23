@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 import random
 import sys
 import time
@@ -266,7 +267,7 @@ for iteration in range(1, args.num_iterations + 1):
                         info["episode"]["l"],
                         global_step,
                     )
-                break
+                    break
 
     # 4. bootstrap value if not done
     with torch.no_grad():
@@ -400,11 +401,9 @@ for iteration in range(1, args.num_iterations + 1):
         if args.write_to_file:
             episodic_return = info["episode"]["r"][0]
             with open(args.write_to_file, "wb") as file:
-                import pickle
-
                 pickle.dump(
                     {
-                        "timesteps": args.num_iterations,
+                        "iterations": args.num_iterations,
                         "last_episodic_return": episodic_return,
                     },
                     file,

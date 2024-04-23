@@ -5,13 +5,15 @@ import torch.nn.functional as F
 
 
 class Actor(nn.Module):
-    def __init__(self, envs):
+    def __init__(self, envs, layer_size):
         super().__init__()
         self.fc1 = nn.Linear(
-            np.array(envs.single_observation_space.shape).prod(), 256
+            np.array(envs.single_observation_space.shape).prod(), layer_size
         )
-        # self.fc2 = nn.Linear(256, 256)
-        self.fc_mu = nn.Linear(256, np.prod(envs.single_action_space.shape))
+        # self.fc2 = nn.Linear(layer_size, layer_size)
+        self.fc_mu = nn.Linear(
+            layer_size, np.prod(envs.single_action_space.shape)
+        )
 
         # action scaling
         # register buffer - helps in having params in the state_dict without gradients

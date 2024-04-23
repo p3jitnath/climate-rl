@@ -39,7 +39,7 @@ def objective(config):
 
     counter = 0
     while not os.path.exists(results_path):
-        time.sleep(5)
+        time.sleep(10)
         counter += 1
         if counter >= 12:
             raise RuntimeError("An error has occured.")
@@ -59,8 +59,11 @@ search_alg = OptunaSearch(seed=42)
 
 ray_kwargs = {}
 ray_kwargs["runtime_env"] = {"working_dir": BASE_DIR, "conda": "venv"}
-if os.environ["ip_head"]:
-    ray_kwargs["address"] = os.environ["ip_head"]
+try:
+    if os.environ["ip_head"]:
+        ray_kwargs["address"] = os.environ["ip_head"]
+except Exception:
+    ray_kwargs["num_cpus"] = 1
 ray.init(**ray_kwargs)
 
 trainable = tune.with_resources(objective, resources={"cpu": 1, "gpu": 0.25})
@@ -72,10 +75,12 @@ if not os.path.exists(RESULTS_DIR):
 storage_path = f"{RESULTS_DIR}/{args.algo}_run_{date}"
 
 if tune.Tuner.can_restore(storage_path):
+    print("Restoring old run ...")
     tuner = tune.Tuner.restore(
         storage_path, trainable=trainable, resume_errored=True
     )
 else:
+    print("Starting from scratch ...")
     tuner = tune.Tuner(
         trainable,
         tune_config=tune.TuneConfig(
@@ -83,7 +88,7 @@ else:
             mode="max",
             search_alg=search_alg,
             num_samples=100,
-            max_concurrent_trials=20,
+            max_concurrent_trials=32,
         ),
         param_space={
             "scaling_config": train.ScalingConfig(use_gpu=True),

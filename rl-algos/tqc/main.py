@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 import random
 import sys
 import time
@@ -383,8 +384,6 @@ for global_step in range(1, args.total_timesteps + 1):
         if args.write_to_file:
             episodic_return = info["episode"]["r"][0]
             with open(args.write_to_file, "wb") as file:
-                import pickle
-
                 pickle.dump(
                     {
                         "timesteps": args.total_timesteps,
