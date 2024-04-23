@@ -9,25 +9,29 @@ import torch.nn as nn
 
 
 class Agent(nn.Module):
-    def __init__(self, envs):
+    def __init__(self, envs, actor_layer_size, critic_layer_size):
         super().__init__()
         self.critic = nn.Sequential(
             nn.Linear(
-                np.array(envs.single_observation_space.shape).prod(), 64
+                np.array(envs.single_observation_space.shape).prod(),
+                critic_layer_size,
             ),
             nn.LeakyReLU(),
-            nn.Linear(64, 64),
+            nn.Linear(critic_layer_size, critic_layer_size),
             nn.LeakyReLU(),
-            nn.Linear(64, 1),
+            nn.Linear(critic_layer_size, 1),
         )
         self.actor_mean = nn.Sequential(
             nn.Linear(
-                np.array(envs.single_observation_space.shape).prod(), 64
+                np.array(envs.single_observation_space.shape).prod(),
+                actor_layer_size,
             ),
             nn.LeakyReLU(),
-            nn.Linear(64, 64),
+            nn.Linear(actor_layer_size, actor_layer_size),
             nn.LeakyReLU(),
-            nn.Linear(64, np.prod(envs.single_action_space.shape)),
+            nn.Linear(
+                actor_layer_size, np.prod(envs.single_action_space.shape)
+            ),
         )
         self.actor_logstd = nn.Parameter(
             torch.zeros(1, np.prod(envs.single_action_space.shape))

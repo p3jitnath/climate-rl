@@ -72,6 +72,8 @@ class Args:
 
     actor_layer_size: int = 128
     """layer size for the actor network"""
+    critic_layer_size: int = 128
+    """layer size for the critic network"""
 
     def __post_init__(self):
         if self.optimise:
@@ -151,6 +153,8 @@ device = torch.device(
     "cuda" if torch.cuda.is_available() and args.cuda else "cpu"
 )
 print(f"device: {device}")
+print(f"actor layer size: {args.actor_layer_size}")
+# print(f"critic layer size: {args.critic_layer_size}")
 
 # 0. env setup
 envs = gym.vector.SyncVectorEnv(

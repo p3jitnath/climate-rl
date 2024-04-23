@@ -22,8 +22,12 @@ from param_tune.config import config
 class Args:
     algo: str = "ddpg"
     """name of rl-algo"""
-    env_id: str = "v0-optim"
+    env_id: str = "v0-homo-64L-64k"
     """name of the environment"""
+    actor_layer_size: int = 64
+    """layer size for the actor network"""
+    critic_layer_size: int = 64
+    """layer size for the critic network"""
 
 
 def objective(config):
@@ -32,6 +36,7 @@ def objective(config):
     results_path = f"{BASE_DIR}/param_tune/tmp/{tmp_file}"
 
     cmd = f"""python -u {BASE_DIR}/rl-algos/{args.algo}/main.py --optimise --write-to-file {results_path} """
+    cmd += f"""--actor_layer_size {args.actor_layer_size} --critic_layer_size {args.critic_layer_size} """
     for param in config["params"]:
         cmd += f"""--{param} {config['params'][param]} """
 
@@ -63,7 +68,8 @@ try:
     if os.environ["ip_head"]:
         ray_kwargs["address"] = os.environ["ip_head"]
 except Exception:
-    ray_kwargs["num_cpus"] = 1
+    ray_kwargs["num_cpus"] = 2
+
 ray.init(**ray_kwargs)
 
 trainable = tune.with_resources(objective, resources={"cpu": 1, "gpu": 0.25})

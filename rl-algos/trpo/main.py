@@ -100,6 +100,11 @@ class Args:
     optim_group: str = ""
     """folder name under results to load optimised set of params"""
 
+    actor_layer_size: int = 64
+    """layer size for the actor network"""
+    critic_layer_size: int = 64
+    """layer size for the critic network"""
+
     def __post_init__(self):
         if self.optimise:
             self.track = False
@@ -190,6 +195,8 @@ device = torch.device(
     "cuda" if torch.cuda.is_available() and args.cuda else "cpu"
 )
 print(f"device: {device}")
+print(f"actor layer size: {args.actor_layer_size}")
+print(f"critic layer size: {args.critic_layer_size}")
 
 # 0. env setup
 envs = gym.vector.SyncVectorEnv(
@@ -202,8 +209,8 @@ assert isinstance(
     envs.single_action_space, gym.spaces.Box
 ), "only continuous action space is supported"
 
-actor = Actor(envs).to(device)
-critic = Critic(envs).to(device)
+actor = Actor(envs, args.actor_layer_size).to(device)
+critic = Critic(envs, args.critic_layer_size).to(device)
 optimizer_critic = optim.Adam(
     critic.parameters(), lr=args.learning_rate, eps=1e-5
 )

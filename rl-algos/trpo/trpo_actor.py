@@ -6,16 +6,17 @@ import torch.nn as nn
 
 
 class Actor(nn.Module):
-    def __init__(self, envs):
+    def __init__(self, envs, layer_size):
         super().__init__()
         self.actor_mean = nn.Sequential(
             nn.Linear(
-                np.array(envs.single_observation_space.shape).prod(), 64
+                np.array(envs.single_observation_space.shape).prod(),
+                layer_size,
             ),
             nn.Tanh(),
-            nn.Linear(64, 64),
+            nn.Linear(layer_size, layer_size),
             nn.Tanh(),
-            nn.Linear(64, np.prod(envs.single_action_space.shape)),
+            nn.Linear(layer_size, np.prod(envs.single_action_space.shape)),
         )
         self.actor_logstd = nn.Parameter(
             torch.zeros(1, np.prod(envs.single_action_space.shape))

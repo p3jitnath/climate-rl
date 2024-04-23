@@ -4,7 +4,7 @@ import torch.nn as nn
 
 
 class QuantileCritics(nn.Module):
-    def __init__(self, envs, n_quantiles, n_critics):
+    def __init__(self, envs, n_quantiles, n_critics, layer_size):
         super().__init__()
         state_dim = np.prod(envs.single_observation_space.shape)
         action_dim = np.prod(envs.single_action_space.shape)
@@ -14,11 +14,11 @@ class QuantileCritics(nn.Module):
 
         def make_critic():
             return nn.Sequential(
-                nn.Linear(state_dim + action_dim, 512),
+                nn.Linear(state_dim + action_dim, layer_size),
                 nn.ReLU(),
-                nn.Linear(512, 512),
+                nn.Linear(layer_size, layer_size),
                 nn.ReLU(),
-                nn.Linear(512, n_quantiles),
+                nn.Linear(layer_size, n_quantiles),
             )
 
         self.critics = nn.ModuleList([make_critic() for _ in range(n_critics)])

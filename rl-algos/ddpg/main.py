@@ -83,6 +83,8 @@ class Args:
 
     actor_layer_size: int = 256
     """layer size for the actor network"""
+    critic_layer_size: int = 256
+    """layer size for the critic network"""
 
     def __post_init__(self):
         if self.optimise:
@@ -161,6 +163,8 @@ device = torch.device(
     "cuda" if torch.cuda.is_available() and args.cuda else "cpu"
 )
 print(f"device: {device}")
+print(f"actor layer size: {args.actor_layer_size}")
+print(f"critic layer size: {args.critic_layer_size}")
 
 # 0. env setup
 envs = gym.vector.SyncVectorEnv(
@@ -171,8 +175,8 @@ assert isinstance(
 ), "only continuous action space is supported"
 
 actor = Actor(envs, args.actor_layer_size).to(device)
-qf1 = Critic(envs).to(device)
-qf1_target = Critic(envs).to(device)
+qf1 = Critic(envs, args.critic_layer_size).to(device)
+qf1_target = Critic(envs, args.critic_layer_size).to(device)
 target_actor = Actor(envs, args.actor_layer_size).to(device)
 
 target_actor.load_state_dict(actor.state_dict())

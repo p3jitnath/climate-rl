@@ -6,16 +6,17 @@ import torch.nn.functional as F
 
 
 class Critic(nn.Module):
-    def __init__(self, envs):
+    def __init__(self, envs, layer_size):
         super().__init__()
         self.critic = nn.Sequential(
             nn.Linear(
-                np.array(envs.single_observation_space.shape).prod(), 64
+                np.array(envs.single_observation_space.shape).prod(),
+                layer_size,
             ),
             nn.Tanh(),
-            nn.Linear(64, 64),
+            nn.Linear(layer_size, layer_size),
             nn.Tanh(),
-            nn.Linear(64, 1),
+            nn.Linear(layer_size, 1),
         )
 
     def get_value(self, x):
