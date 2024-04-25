@@ -11,6 +11,7 @@ config["ddpg"] = {
     "exploration_noise": tune.uniform(0.1, 0.3),
     "policy_frequency": tune.choice([x for x in range(1, 11)]),
     "noise_clip": tune.choice([x * 0.1 for x in range(1, 11)]),
+    "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
 }
 
 config["dpg"] = {
@@ -19,6 +20,7 @@ config["dpg"] = {
     # "batch_size": tune.choice([64, 128]),
     "exploration_noise": tune.uniform(0.1, 0.3),
     "policy_frequency": tune.choice([x for x in range(1, 11)]),
+    "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
 }
 
 config["td3"] = {
@@ -29,6 +31,7 @@ config["td3"] = {
     "exploration_noise": tune.uniform(0.1, 0.3),
     "policy_frequency": tune.choice([x for x in range(1, 11)]),
     "noise_clip": tune.choice([x * 0.1 for x in range(1, 11)]),
+    "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
 }
 
 config["ppo"] = {
@@ -37,6 +40,7 @@ config["ppo"] = {
     "update_epochs": tune.choice([x for x in range(1, 11)]),
     "clip_coef": tune.uniform(0.1, 0.3),
     "max_grad_norm": tune.choice([0.5 + (0.1 * x) for x in range(0, 5)]),
+    "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
 }
 
 config["trpo"] = {
@@ -45,6 +49,7 @@ config["trpo"] = {
     "update_epochs": tune.choice([x for x in range(1, 11)]),
     "clip_coef": tune.uniform(0.1, 0.3),
     "max_grad_norm": tune.choice([0.5 + (0.1 * x) for x in range(0, 5)]),
+    "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
 }
 
 config["sac"] = {
@@ -56,6 +61,7 @@ config["sac"] = {
     "target_network_frequency": tune.choice([x for x in range(1, 11)]),
     "noise_clip": tune.choice([x * 0.1 for x in range(1, 11)]),
     "alpha": tune.choice([x * 0.1 for x in range(1, 6)]),
+    "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
 }
 
 config["tqc"] = {
@@ -68,4 +74,5 @@ config["tqc"] = {
     "alpha_adam_lr": tune.uniform(1e-4, 1e-2),
     "policy_frequency": tune.choice([x for x in range(1, 11)]),
     "target_network_frequency": tune.choice([x for x in range(1, 11)]),
+    "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
 }

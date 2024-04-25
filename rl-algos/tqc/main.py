@@ -240,9 +240,9 @@ critic_optimizer = torch.optim.Adam(
     critics.parameters(), lr=args.critic_adam_lr
 )
 
-target_critics = QuantileCritics(envs, args.n_quantiles, args.n_critics).to(
-    device
-)
+target_critics = QuantileCritics(
+    envs, args.n_quantiles, args.n_critics, args.critic_layer_size
+).to(device)
 target_critics.load_state_dict(critics.state_dict())
 target_critics.requires_grad_(False)
 

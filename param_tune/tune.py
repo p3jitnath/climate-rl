@@ -6,6 +6,7 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
+from typing import Optional
 
 import ray
 import tyro
@@ -22,11 +23,11 @@ from param_tune.config import config
 class Args:
     algo: str = "ddpg"
     """name of rl-algo"""
-    env_id: str = "v0-homo-64L-64k"
+    env_id: str = "v0-optim-L-64k"
     """name of the environment"""
-    actor_layer_size: int = 64
+    actor_layer_size: Optional[int] = None
     """layer size for the actor network"""
-    critic_layer_size: int = 64
+    critic_layer_size: Optional[int] = None
     """layer size for the critic network"""
 
 
@@ -36,9 +37,22 @@ def objective(config):
     results_path = f"{BASE_DIR}/param_tune/tmp/{tmp_file}"
 
     cmd = f"""python -u {BASE_DIR}/rl-algos/{args.algo}/main.py --optimise --write-to-file {results_path} """
-    cmd += f"""--actor_layer_size {args.actor_layer_size} --critic_layer_size {args.critic_layer_size} """
     for param in config["params"]:
-        cmd += f"""--{param} {config['params'][param]} """
+        if param == "actor_critic_layer_size":
+            actor_layer_size = (
+                args.actor_layer_size
+                if args.actor_layer_size
+                else config["params"][param]
+            )
+            critic_layer_size = (
+                args.critic_layer_size
+                if args.critic_layer_size
+                else config["params"][param]
+            )
+            cmd += f"""--actor_layer_size {actor_layer_size} """
+            cmd += f"""--critic_layer_size {critic_layer_size} """
+        else:
+            cmd += f"""--{param} {config['params'][param]} """
 
     subprocess.run(cmd.split())
 
