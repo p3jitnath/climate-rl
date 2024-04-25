@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 import random
 import sys
 import time
@@ -111,6 +112,11 @@ class Args:
     optim_group: str = ""
     """folder name under results to load optimised set of params"""
 
+    actor_layer_size: int = 256
+    """layer size for the actor network"""
+    critic_layer_size: int = 512
+    """layer size for the critic network"""
+
     def __post_init__(self):
         if self.optimise:
             self.track = False
@@ -209,6 +215,8 @@ device = torch.device(
     "cuda" if torch.cuda.is_available() and args.cuda else "cpu"
 )
 print(f"device: {device}")
+print(f"actor layer size: {args.actor_layer_size}")
+print(f"critic layer size: {args.critic_layer_size}")
 
 # 0. env setup
 envs = gym.vector.SyncVectorEnv(
@@ -222,17 +230,19 @@ if args.use_paper_n_quantiles_to_drop:
         f"Using paper n_quantiles_to_drop: {args.n_quantiles_to_drop} for env: {args.env_id}"
     )
 
-actor = Actor(envs).to(device)
-critics = QuantileCritics(envs, args.n_quantiles, args.n_critics).to(device)
+actor = Actor(envs, args.actor_layer_size).to(device)
+critics = QuantileCritics(
+    envs, args.n_quantiles, args.n_critics, args.critic_layer_size
+).to(device)
 args.n_top_quantiles_to_drop = args.n_quantiles_to_drop * critics.n_critics
 actor_optimizer = torch.optim.Adam(actor.parameters(), lr=args.actor_adam_lr)
 critic_optimizer = torch.optim.Adam(
     critics.parameters(), lr=args.critic_adam_lr
 )
 
-target_critics = QuantileCritics(envs, args.n_quantiles, args.n_critics).to(
-    device
-)
+target_critics = QuantileCritics(
+    envs, args.n_quantiles, args.n_critics, args.critic_layer_size
+).to(device)
 target_critics.load_state_dict(critics.state_dict())
 target_critics.requires_grad_(False)
 
@@ -383,8 +393,6 @@ for global_step in range(1, args.total_timesteps + 1):
         if args.write_to_file:
             episodic_return = info["episode"]["r"][0]
             with open(args.write_to_file, "wb") as file:
-                import pickle
-
                 pickle.dump(
                     {
                         "timesteps": args.total_timesteps,

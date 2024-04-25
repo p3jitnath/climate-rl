@@ -60,6 +60,7 @@ for ALGO in "${ALGOS[@]}"; do
 conda activate venv
 cd "$BASE_DIR"
 export WANDB_MODE=offline
-python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --optim_group "$TAG" --wandb_group "$WANDB_GROUP"
+python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --optim_group "$TAG" --wandb_group "$WANDB_GROUP" --actor_layer_size 64 --critic_layer_size 64
 EOT
+    sleep 60
 done

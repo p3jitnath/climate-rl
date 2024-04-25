@@ -1,5 +1,6 @@
 import json
 import os
+import pickle
 import random
 import sys
 import time
@@ -98,6 +99,11 @@ class Args:
     optim_group: str = ""
     """folder name under results to load optimised set of params"""
 
+    actor_layer_size: int = 64
+    """layer size for the actor network"""
+    critic_layer_size: int = 64
+    """layer size for the critic network"""
+
     def __post_init__(self):
         if self.optimise:
             self.track = False
@@ -189,6 +195,8 @@ device = torch.device(
     "cuda" if torch.cuda.is_available() and args.cuda else "cpu"
 )
 print(f"device: {device}")
+print(f"actor layer size: {args.actor_layer_size}")
+print(f"critic layer size: {args.critic_layer_size}")
 
 # 0. env setup
 envs = gym.vector.SyncVectorEnv(
@@ -201,7 +209,7 @@ assert isinstance(
     envs.single_action_space, gym.spaces.Box
 ), "only continuous action space is supported"
 
-agent = Agent(envs).to(device)
+agent = Agent(envs, args.actor_layer_size, args.critic_layer_size).to(device)
 optimizer = optim.Adam(agent.parameters(), lr=args.learning_rate, eps=1e-5)
 
 obs = torch.zeros(
@@ -266,7 +274,7 @@ for iteration in range(1, args.num_iterations + 1):
                         info["episode"]["l"],
                         global_step,
                     )
-                break
+                    break
 
     # 4. bootstrap value if not done
     with torch.no_grad():
@@ -400,11 +408,9 @@ for iteration in range(1, args.num_iterations + 1):
         if args.write_to_file:
             episodic_return = info["episode"]["r"][0]
             with open(args.write_to_file, "wb") as file:
-                import pickle
-
                 pickle.dump(
                     {
-                        "timesteps": args.num_iterations,
+                        "iterations": args.num_iterations,
                         "last_episodic_return": episodic_return,
                     },
                     file,

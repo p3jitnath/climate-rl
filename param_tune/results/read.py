@@ -1,12 +1,22 @@
 import glob
 import json
 import pickle
+from dataclasses import dataclass
 
 import pandas as pd
+import tyro
 
-ENV_ID = "v0-optim"
+
+@dataclass
+class Args:
+    env_id: str = "v0-optim-60k"
+    """name of the environment"""
+
+
+args = tyro.cli(Args)
+
 BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
-ENV_DIR = f"{BASE_DIR}/param_tune/results/{ENV_ID}"
+ENV_DIR = f"{BASE_DIR}/param_tune/results/{args.env_id}"
 
 best_metrics = {}
 

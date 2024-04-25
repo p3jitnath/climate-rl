@@ -2,11 +2,10 @@ import numpy as np
 import torch
 from torch.distributions.kl import kl_divergence
 
-
-def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
-    torch.nn.init.orthogonal_(layer.weight, std)
-    torch.nn.init.constant_(layer.bias, bias_const)
-    return layer
+# def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
+#     torch.nn.init.orthogonal_(layer.weight, std)
+#     torch.nn.init.constant_(layer.bias, bias_const)
+#     return layer
 
 
 def fisher_vector_product(actor, obs, x, cg_damping=0.1):

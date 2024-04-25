@@ -8,15 +8,17 @@ LOG_STD_MIN = -5
 
 
 class Actor(nn.Module):
-    def __init__(self, envs):
+    def __init__(self, envs, layer_size):
         super().__init__()
         self.fc1 = nn.Linear(
-            np.array(envs.single_observation_space.shape).prod(), 256
+            np.array(envs.single_observation_space.shape).prod(), layer_size
         )
-        self.fc2 = nn.Linear(256, 256)
-        self.fc_mean = nn.Linear(256, np.prod(envs.single_action_space.shape))
+        self.fc2 = nn.Linear(layer_size, layer_size)
+        self.fc_mean = nn.Linear(
+            layer_size, np.prod(envs.single_action_space.shape)
+        )
         self.fc_logstd = nn.Linear(
-            256, np.prod(envs.single_action_space.shape)
+            layer_size, np.prod(envs.single_action_space.shape)
         )
 
         self.register_buffer(
