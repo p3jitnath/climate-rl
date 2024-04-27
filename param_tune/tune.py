@@ -23,7 +23,7 @@ from param_tune.config import config
 class Args:
     algo: str = "ddpg"
     """name of rl-algo"""
-    env_id: str = "v0-optim-L-64k"
+    env_id: str = "v1-optim-L-64k"
     """name of the environment"""
     actor_layer_size: Optional[int] = None
     """layer size for the actor network"""

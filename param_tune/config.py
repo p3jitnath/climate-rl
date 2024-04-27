@@ -2,7 +2,10 @@ from ray import tune
 
 config = {}
 
-config["reinforce"] = {"learning_rate": tune.uniform(1e-4, 1e-2)}
+config["reinforce"] = {
+    "learning_rate": tune.uniform(1e-4, 1e-2),
+    "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
+}
 
 config["ddpg"] = {
     "learning_rate": tune.uniform(1e-4, 1e-2),
