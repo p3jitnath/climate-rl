@@ -35,6 +35,7 @@ BASE_DIR="/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 
 # 3. List of algorithms
 ALGOS=("ddpg" "dpg" "ppo" "reinforce" "sac" "td3" "trpo" "tqc")
+# ALGOS=("reinforce")
 
 # 4. Get the current date and time in YYYY-MM-DD_HH-MM format
 NOW=$(date +%F_%H-%M)
@@ -60,7 +61,7 @@ for ALGO in "${ALGOS[@]}"; do
 conda activate venv
 cd "$BASE_DIR"
 export WANDB_MODE=offline
-python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --optim_group "$TAG" --wandb_group "$WANDB_GROUP" --actor_layer_size 64 --critic_layer_size 64
+python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --optim_group "$TAG" --wandb_group "$WANDB_GROUP"
 EOT
     sleep 60
 done

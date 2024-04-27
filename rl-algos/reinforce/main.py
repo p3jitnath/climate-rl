@@ -93,7 +93,10 @@ class Args:
                     if k not in {"algo", "episodic_return", "date"}
                 }
                 for key, value in opt_params.items():
-                    if hasattr(self, key):
+                    if key == "actor_critic_layer_size":
+                        setattr(self, "actor_layer_size", value)
+                        setattr(self, "critic_layer_size", value)
+                    elif hasattr(self, key):
                         setattr(self, key, value)
 
 
