@@ -23,12 +23,16 @@ from param_tune.config import config
 class Args:
     algo: str = "ddpg"
     """name of rl-algo"""
-    env_id: str = "v1-optim-L-64k"
+    exp_id: str = "v0-optim-L-60k"
+    """name of the experiment"""
+    env_id: str = "SimpleClimateBiasCorrection-v0"
     """name of the environment"""
     actor_layer_size: Optional[int] = None
     """layer size for the actor network"""
     critic_layer_size: Optional[int] = None
     """layer size for the critic network"""
+    opt_timesteps: int = 2000
+    """timestep duration for one single optimisation run"""
 
 
 def objective(config):
@@ -36,7 +40,7 @@ def objective(config):
     tmp_file = f"{args.algo}_{study_id}.tmp"
     results_path = f"{BASE_DIR}/param_tune/tmp/{tmp_file}"
 
-    cmd = f"""python -u {BASE_DIR}/rl-algos/{args.algo}/main.py --optimise --write-to-file {results_path} """
+    cmd = f"""python -u {BASE_DIR}/rl-algos/{args.algo}/main.py --env_id {args.env_id} --optimise --opt_timesteps {args.opt_timesteps} --write-to-file {results_path} """
     for param in config["params"]:
         if param == "actor_critic_layer_size":
             actor_layer_size = (
@@ -88,7 +92,7 @@ ray.init(**ray_kwargs)
 
 trainable = tune.with_resources(objective, resources={"cpu": 1, "gpu": 0.25})
 
-RESULTS_DIR = f"{BASE_DIR}/param_tune/results/{args.env_id}"
+RESULTS_DIR = f"{BASE_DIR}/param_tune/results/{args.exp_id}"
 if not os.path.exists(RESULTS_DIR):
     os.makedirs(RESULTS_DIR)
 
@@ -116,7 +120,7 @@ else:
         },
         run_config=train.RunConfig(
             storage_path=storage_path,
-            name=f"pn341_ray_slurm_{args.env_id}_{args.algo}",
+            name=f"pn341_ray_slurm_{args.exp_id}_{args.algo}",
         ),
     )
 results = tuner.fit()

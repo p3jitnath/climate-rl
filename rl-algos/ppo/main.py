@@ -23,9 +23,6 @@ sys.path.append(BASE_DIR)
 
 from param_tune.utils.no_op_summary_writer import NoOpSummaryWriter
 
-with open(f"{BASE_DIR}/rl-algos/config.json", "r") as file:
-    config = json.load(file)
-
 os.environ["MUJOCO_GL"] = "egl"
 date = time.strftime("%Y-%m-%d", time.gmtime(time.time()))
 
@@ -57,15 +54,15 @@ class Args:
     hf_entity: str = ""
     """the user or org name of the model repository from the Hugging Face Hub"""
 
-    env_id: str = config["env_id"]
+    env_id: str = "SimpleClimateBiasCorrection-v0"
     """the id of the environment"""
-    total_timesteps: int = config["total_timesteps"]
+    total_timesteps: int = 60000
     """total timesteps of the experiments"""
     learning_rate: float = 3e-4
     """the learning rate of the optimizer"""
     num_envs: int = 1
     """the number of sequential game environments"""
-    num_steps: int = config["max_episode_steps"]
+    num_steps: int = 200
     """the number of steps to run in each environment per policy rollout"""
     anneal_lr: bool = True
     """Toggle learning rate annealing for policy and value networks"""
@@ -98,6 +95,8 @@ class Args:
     """filename to write last episode return"""
     optim_group: str = ""
     """folder name under results to load optimised set of params"""
+    opt_timesteps: Optional[int] = None
+    """timestep duration for one single optimisation run"""
 
     actor_layer_size: int = 64
     """layer size for the actor network"""
@@ -108,7 +107,7 @@ class Args:
         if self.optimise:
             self.track = False
             self.capture_video = False
-            self.total_timesteps = config["opt_timesteps"]
+            self.total_timesteps = self.opt_timesteps
 
         if self.optim_group:
             algo = self.exp_name.split("_")[0]
