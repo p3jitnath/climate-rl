@@ -5,6 +5,7 @@ import random
 import sys
 import time
 from dataclasses import dataclass
+from typing import Optional
 
 import climate_envs
 import gymnasium as gym
@@ -22,9 +23,6 @@ BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 sys.path.append(BASE_DIR)
 
 from param_tune.utils.no_op_summary_writer import NoOpSummaryWriter
-
-with open(f"{BASE_DIR}/rl-algos/config.json", "r") as file:
-    config = json.load(file)
 
 os.environ["MUJOCO_GL"] = "egl"
 date = time.strftime("%Y-%m-%d", time.gmtime(time.time()))
@@ -51,9 +49,9 @@ class Args:
     capture_video: bool = True
     """whether to capture videos of the agent performances (check out `videos` folder)"""
 
-    env_id: str = config["env_id"]
+    env_id: str = "SimpleClimateBiasCorrection-v0"
     """the id of the environment"""
-    total_timesteps: int = config["total_timesteps"]
+    total_timesteps: int = 60000
     """total timesteps of the experiments"""
     learning_rate: float = 3e-4
     """the learning rate of the optimizer"""
@@ -69,7 +67,7 @@ class Args:
     """the scale of policy noise"""
     exploration_noise: float = 0.1
     """the scale of exploration noise"""
-    learning_starts: int = config["learning_starts"]
+    learning_starts: int = 1000
     """timestep to start learning"""
     policy_frequency: int = 2
     """the frequency of training policy (delayed)"""
@@ -82,6 +80,8 @@ class Args:
     """filename to write last episode return"""
     optim_group: str = ""
     """folder name under results to load optimised set of params"""
+    opt_timesteps: Optional[int] = None
+    """timestep duration for one single optimisation run"""
 
     actor_layer_size: int = 256
     """layer size for the actor network"""
@@ -92,7 +92,7 @@ class Args:
         if self.optimise:
             self.track = False
             self.capture_video = False
-            self.total_timesteps = config["opt_timesteps"]
+            self.total_timesteps = self.opt_timesteps
 
         if self.optim_group:
             algo = self.exp_name.split("_")[0]

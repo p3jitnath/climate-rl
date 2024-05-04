@@ -44,22 +44,22 @@ fi
 BASE_DIR="/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 
 # 3. List of algorithms
-# ALGOS=("ddpg" "dpg" "ppo" "reinforce" "sac" "td3" "trpo" "tqc")
-ALGOS=("reinforce")
+ALGOS=("ddpg" "dpg" "ppo" "reinforce" "sac" "td3" "trpo" "tqc")
 
 # 4. Get the current date and time in YYYY-MM-DD_HH-MM format
 NOW=$(date +%F_%H-%M)
 
-# 5. Loop through each algorithm and execute the script
+# 5. Loop through each algorithm and execute the script for multiple seeds
 for ALGO in "${ALGOS[@]}"; do
-    WANDB_GROUP="${TAG}_${NOW}"
-    # Submit each algorithm run as a separate Slurm job
-    sbatch <<EOT
+    WANDB_GROUP="x9_${TAG}_${NOW}"
+    for SEED in {2..10}; do
+        # Submit each algorithm run as a separate Slurm job
+        sbatch <<EOT
 #!/bin/bash
 
-#SBATCH --job-name=pn341_${ALGO}_${TAG}
-#SBATCH --output=$BASE_DIR/slurm/${ALGO}_${TAG}_%j.out
-#SBATCH --error=$BASE_DIR/slurm/${ALGO}_${TAG}_%j.err
+#SBATCH --job-name=pn341_${ALGO}_${TAG}_seed${SEED}
+#SBATCH --output=$BASE_DIR/slurm/${ALGO}_${TAG}_seed${SEED}_%j.out
+#SBATCH --error=$BASE_DIR/slurm/${ALGO}_${TAG}_seed${SEED}_%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=2
@@ -71,7 +71,8 @@ for ALGO in "${ALGOS[@]}"; do
 conda activate venv
 cd "$BASE_DIR"
 export WANDB_MODE=offline
-python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --env_id "$ENV_ID" --optim_group "$TAG" --wandb_group "$WANDB_GROUP" --no-track
+python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --env_id "$ENV_ID" --optim_group "$TAG" --seed $SEED --wandb_group "$WANDB_GROUP" --no-track
 EOT
-    sleep 60
+    done
+    sleep 30
 done
