@@ -96,4 +96,4 @@ for ((i = 1; i <= worker_num; i++)); do
     sleep 30
 done
 
-python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "v1-optim-L" --env_id "SimpleClimateBiasCorrection-v0" --opt_timesteps 2000
+python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "v2-optim-L-60k" --env_id "SimpleClimateBiasCorrection-v2" --opt_timesteps 60000
