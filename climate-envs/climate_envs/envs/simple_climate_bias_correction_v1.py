@@ -226,8 +226,8 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
 
         # Calculate the position for the observed mark line
         observed_ratio = (321.75 - 273.15) / (380 - 273.15)
-        observed_mark_y = (screen_height / 2) - (thermometer_height / 2)
-        observed_mark_y += thermometer_height * observed_ratio
+        observed_mark_y = (screen_height / 2) + (thermometer_height / 2)
+        observed_mark_y -= thermometer_height * observed_ratio
 
         observed_mark_start = (screen_width / 2) - (thermometer_width / 2)
         observed_mark_end = (screen_width / 2) + (thermometer_width / 2)
@@ -245,7 +245,7 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
         min_temp_k = self.min_physics_temperature
         max_temp_k = self.max_physics_temperature
         temp_range_k = max_temp_k - min_temp_k
-        marking_spacing_k = 25  # Every x degrees
+        marking_spacing_k = 20  # Every x degrees
 
         for temp_k in range(
             int(min_temp_k), int(max_temp_k) + 1, marking_spacing_k
