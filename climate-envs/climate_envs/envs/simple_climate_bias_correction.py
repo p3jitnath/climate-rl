@@ -43,7 +43,7 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
         self.clock = None
 
         self.max_physics_temperature = 380
-        self.target_physics_temperature = 321.75
+        self.observed_physics_temperature = 321.75
         self.min_physics_temperature = 273.15
 
         # Define action and observation spaces
@@ -76,34 +76,35 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
             tuple: A tuple containing the new observation, the reward, whether the episode is done,
                    and additional information.
         """
-        temperature = self.state[0]
+        current_temperature = self.state[0]
 
         # Clip action to the allowed range
         u = np.clip(u, -self.max_heating_rate, self.max_heating_rate)[0]
 
         # Calculate new temperature
-        target_temperature = (
-            self.target_physics_temperature - self.min_physics_temperature
+        observed_temperature = (
+            self.observed_physics_temperature - self.min_physics_temperature
         ) / 100
         physics_temperature = (
             self.max_physics_temperature - self.min_physics_temperature
         ) / 100
-        new_temperature = (
-            temperature
-            + u
-            + (physics_temperature - temperature)
+        division_constant = physics_temperature - observed_temperature
+
+        new_temperature = current_temperature + u
+        relaxation = (
+            (physics_temperature - current_temperature)
             * 0.2
-            / (physics_temperature - target_temperature)
+            / division_constant
         )
-        analysis_nudge = (
-            (target_temperature - new_temperature)
-            * 0.1
-            / (physics_temperature - target_temperature)
+        new_temperature += relaxation
+
+        bias_correction = (
+            (observed_temperature - new_temperature) * 0.1 / division_constant
         )
-        new_temperature += analysis_nudge
+        new_temperature += bias_correction
 
         # Calculate cost (negative reward)
-        costs = analysis_nudge**2
+        costs = bias_correction**2
         new_temperature = np.clip(
             new_temperature, self.min_temperature, self.max_temperature
         )
@@ -214,20 +215,20 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
         )
         pygame.draw.rect(self.screen, (150, 150, 150), base_rect)  # Dark gray
 
-        # Calculate the position for the target mark line
-        target_ratio = (321.75 - 273.15) / (380 - 273.15)
-        target_mark_y = (screen_height / 2) - (thermometer_height / 2)
-        target_mark_y += thermometer_height * target_ratio
+        # Calculate the position for the observed mark line
+        observed_ratio = (321.75 - 273.15) / (380 - 273.15)
+        observed_mark_y = (screen_height / 2) - (thermometer_height / 2)
+        observed_mark_y += thermometer_height * observed_ratio
 
-        target_mark_start = (screen_width / 2) - (thermometer_width / 2)
-        target_mark_end = (screen_width / 2) + (thermometer_width / 2)
+        observed_mark_start = (screen_width / 2) - (thermometer_width / 2)
+        observed_mark_end = (screen_width / 2) + (thermometer_width / 2)
 
-        # Draw the target mark line
+        # Draw the observed mark line
         pygame.draw.line(
             self.screen,
             (0, 0, 0),
-            (target_mark_start, target_mark_y),
-            (target_mark_end, target_mark_y),
+            (observed_mark_start, observed_mark_y),
+            (observed_mark_end, observed_mark_y),
             5,
         )  # Black line
 
