@@ -182,4 +182,4 @@ slurm/
 
 *_run_*
 
-run_test.sh
+*test*

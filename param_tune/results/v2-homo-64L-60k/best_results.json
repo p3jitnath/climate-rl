@@ -1,0 +1,86 @@
+{
+    "ddpg": {
+        "learning_rate": 0.0017875666574679195,
+        "tau": 0.0016000837495879338,
+        "batch_size": 128,
+        "exploration_noise": 0.10368722371323595,
+        "policy_frequency": 2,
+        "noise_clip": 0.1,
+        "algo": "ddpg",
+        "date": "2024-05-06",
+        "episodic_return": -160.40234375
+    },
+    "dpg": {
+        "learning_rate": 0.004703637281394066,
+        "exploration_noise": 0.10054519440723389,
+        "policy_frequency": 2,
+        "algo": "dpg",
+        "date": "2024-05-06",
+        "episodic_return": -160.73175048828125
+    },
+    "ppo": {
+        "learning_rate": 0.009500254174210658,
+        "num_minibatches": 20,
+        "update_epochs": 2,
+        "clip_coef": 0.12776543452988204,
+        "max_grad_norm": 0.8,
+        "algo": "ppo",
+        "date": "2024-05-06",
+        "episodic_return": -160.00961303710938
+    },
+    "reinforce": {
+        "learning_rate": 0.009906854024589797,
+        "algo": "reinforce",
+        "date": "2024-05-06",
+        "episodic_return": -176.5151824951172
+    },
+    "sac": {
+        "tau": 0.08347765546188367,
+        "batch_size": 128,
+        "policy_lr": 0.0001763674886528612,
+        "q_lr": 0.0029772807685065563,
+        "policy_frequency": 3,
+        "target_network_frequency": 2,
+        "noise_clip": 0.30000000000000004,
+        "alpha": 0.4,
+        "algo": "sac",
+        "date": "2024-05-06",
+        "episodic_return": -160.53257751464844
+    },
+    "td3": {
+        "learning_rate": 0.0038461753055058544,
+        "tau": 0.09798500346844169,
+        "batch_size": 64,
+        "policy_noise": 0.17928679004282405,
+        "exploration_noise": 0.10024347332900385,
+        "policy_frequency": 2,
+        "noise_clip": 0.6000000000000001,
+        "algo": "td3",
+        "date": "2024-05-06",
+        "episodic_return": -160.4465789794922
+    },
+    "tqc": {
+        "tau": 0.05581205126640753,
+        "batch_size": 64,
+        "n_quantiles": 15,
+        "n_critics": 20,
+        "actor_adam_lr": 0.0012931794305886023,
+        "critic_adam_lr": 0.009103487202343722,
+        "alpha_adam_lr": 0.0001928508169255334,
+        "policy_frequency": 1,
+        "target_network_frequency": 9,
+        "algo": "tqc",
+        "date": "2024-05-06",
+        "episodic_return": -160.1954803466797
+    },
+    "trpo": {
+        "learning_rate": 0.003257858739908237,
+        "num_minibatches": 10,
+        "update_epochs": 4,
+        "clip_coef": 0.29810102840013464,
+        "max_grad_norm": 0.9,
+        "algo": "trpo",
+        "date": "2024-05-06",
+        "episodic_return": -160.25856018066406
+    }
+}
