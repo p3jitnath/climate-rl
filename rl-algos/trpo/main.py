@@ -325,7 +325,7 @@ for iteration in range(1, num_iterations + 1):
             _, new_log_prob, entropy = actor.get_action(
                 b_obs[mb_inds], b_actions[mb_inds]
             )
-            new_value = critic.get_value(b_obs[mb_inds])
+            new_values = critic.get_value(b_obs[mb_inds])
             log_ratio = new_log_prob - b_logprobs[mb_inds]
             ratio = log_ratio.exp()
 
@@ -349,8 +349,8 @@ for iteration in range(1, num_iterations + 1):
                 )
 
             # 5c. calculating value loss
-            new_value = new_value.view(-1)
-            v_loss = 0.5 * ((new_value - b_returns[mb_inds]) ** 2).mean()
+            new_values = new_values.view(-1)
+            v_loss = 0.5 * ((new_values - b_returns[mb_inds]) ** 2).mean()
             optimizer_critic.zero_grad()
             v_loss.backward()
             nn.utils.clip_grad_norm_(critic.parameters(), args.max_grad_norm)
@@ -360,9 +360,9 @@ for iteration in range(1, num_iterations + 1):
             pg_loss = (mb_advantages * ratio).mean()
             actor.zero_grad()
             pg_grad = torch.autograd.grad(pg_loss, tuple(actor.parameters()))
-            flat_pg_graid = torch.cat([grad.view(-1) for grad in pg_grad])
+            flat_pg_grad = torch.cat([grad.view(-1) for grad in pg_grad])
             step_dir = conjugate_gradient(
-                actor, b_obs[mb_inds], flat_pg_graid, cg_iters=10
+                actor, b_obs[mb_inds], flat_pg_grad, cg_iters=10
             )
             step_size = torch.sqrt(
                 2
@@ -380,7 +380,7 @@ for iteration in range(1, num_iterations + 1):
             params = torch.cat(
                 [param.view(-1) for param in actor.parameters()]
             )
-            expected_improve = (flat_pg_graid * step_dir).sum().item()
+            expected_improve = (flat_pg_grad * step_dir).sum().item()
             fraction = 1.0
             for i in range(10):
                 new_params = params + fraction * step_dir
