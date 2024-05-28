@@ -63,6 +63,7 @@ for ALGO in "${ALGOS[@]}"; do
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=2
 #SBATCH --gres=gpu:1
+#SBATCH --mem=8G
 #SBATCH --time=24:00:00
 #SBATCH --partition=orchid
 #SBATCH --account=orchid

@@ -89,7 +89,7 @@ _MIN_LOG_TEMPERATURE = -18.0
 _MIN_LOG_ALPHA = -18.0
 
 
-def make_env(env_id, seed, idx, capture_video, run_name):
+def make_env(env_id, seed, idx, capture_video, run_name, capture_video_freq):
     def thunk():
         if capture_video and idx == 0:
             env = gym.make(env_id, render_mode="rgb_array")

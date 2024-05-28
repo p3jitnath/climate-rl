@@ -21,3 +21,9 @@ register(
     entry_point="climate_envs.envs.simple_climate_bias_correction_v2:SimpleClimateBiasCorrectionEnv",
     max_episode_steps=200,
 )
+
+register(
+    id="RadiativeConvectiveModel-v0",
+    entry_point="climate_envs.envs:RadiativeConvectiveModelEnv",
+    max_episode_steps=500,
+)
