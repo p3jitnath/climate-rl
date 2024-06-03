@@ -33,6 +33,8 @@ class Args:
     """layer size for the critic network"""
     opt_timesteps: int = 2000
     """timestep duration for one single optimisation run"""
+    num_steps: int = 200
+    """the number of steps to run in each environment per policy rollout"""
 
 
 def objective(config):
@@ -40,7 +42,7 @@ def objective(config):
     tmp_file = f"{args.algo}_{study_id}.tmp"
     results_path = f"{BASE_DIR}/param_tune/tmp/{tmp_file}"
 
-    cmd = f"""python -u {BASE_DIR}/rl-algos/{args.algo}/main.py --env_id {args.env_id} --optimise --opt_timesteps {args.opt_timesteps} --write-to-file {results_path} """
+    cmd = f"""python -u {BASE_DIR}/rl-algos/{args.algo}/main.py --env_id {args.env_id} --optimise --opt_timesteps {args.opt_timesteps} --num_steps {args.num_steps} --write-to-file {results_path} """
     for param in config["params"]:
         if param == "actor_critic_layer_size":
             actor_layer_size = (

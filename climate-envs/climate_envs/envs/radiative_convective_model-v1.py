@@ -55,14 +55,20 @@ class RadiativeConvectiveModelEnv(gym.Env):
 
         self.action_space = spaces.Box(
             low=np.array(
-                [self.min_emissivity, self.min_adj_lapse_rate],
+                [
+                    self.min_emissivity,
+                    *[self.min_adj_lapse_rate for x in range(len(Tobs.level))],
+                ],
                 dtype=np.float32,
             ),
             high=np.array(
-                [self.max_emissivity, self.max_adj_lapse_rate],
+                [
+                    self.max_emissivity,
+                    *[self.max_adj_lapse_rate for x in range(len(Tobs.level))],
+                ],
                 dtype=np.float32,
             ),
-            shape=(2,),
+            shape=(1 + len(Tobs.level),),
             dtype=np.float32,
         )
         self.observation_space = spaces.Box(
@@ -102,7 +108,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
     def _get_params(self):
         emissivity = self.rcm.subprocess["Radiation (net)"].emissivity
         adj_lapse_rate = self.rcm.subprocess["Convection"].adj_lapse_rate
-        params = np.array([emissivity, adj_lapse_rate], dtype=np.float32)
+        params = np.array([emissivity, *adj_lapse_rate], dtype=np.float32)
         return params
 
     def _get_state(self):
@@ -110,7 +116,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
         return state
 
     def step(self, action):
-        emissivity, adj_lapse_rate = action[0], action[1]
+        emissivity, adj_lapse_rate = action[0], action[1:]
 
         emissivity = np.clip(
             emissivity, self.min_emissivity, self.max_emissivity
@@ -151,7 +157,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
         conv = climlab.convection.ConvectiveAdjustment(
             name="Convection",
             state=rce_state,
-            adj_lapse_rate=6.5,
+            adj_lapse_rate="MALR",
             timestep=rad.timestep,
         )
 
@@ -192,9 +198,14 @@ class RadiativeConvectiveModelEnv(gym.Env):
         # Left subplot: emissivity and adj_lapse_rate as bar plots
         ax1 = fig.add_subplot(gs[0, 0])
 
-        ax1_labels = ["Emissivity", "Adj Lapse Rate"]
+        ax1_labels = ["Emissivity", "Mean Adj Lapse Rate"]
         ax1_colors = ["tab:blue", "tab:blue"]
-        ax1_bars = ax1.bar(ax1_labels, params, color=ax1_colors, width=0.75)
+        ax1_bars = ax1.bar(
+            ax1_labels,
+            [params[0], np.mean(params[1:])],
+            color=ax1_colors,
+            width=0.75,
+        )
         ax1.set_ylim(0, 10)
         ax1.set_ylabel("Value", fontsize=14)
         ax1.set_title("Parameters")

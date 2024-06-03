@@ -133,7 +133,7 @@ def calculate_score(data, threshold, alpha=0.9, beta=0.05, gamma=0.05):
             )
             mean_at_threshold = performance["means"][episodes_to_threshold]
             diff_from_60k = -1 * (
-                data_v2[algo]["means"][-1] - mean_at_threshold
+                data_v2_60k[algo]["means"][-1] - mean_at_threshold
             )
             score = alpha * (1 / ((episodes_to_threshold * 1e-3) + 1))
             score += beta * (1 / ((var_after_threshold * 1e6) + 1e-6))

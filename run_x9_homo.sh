@@ -44,7 +44,7 @@ fi
 BASE_DIR="/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 
 # 3. List of algorithms
-ALGOS=("ddpg" "dpg" "ppo" "reinforce" "sac" "td3" "trpo" "tqc")
+ALGOS=("ddpg" "dpg" "td3" "reinforce" "trpo" "ppo" "sac" "tqc")
 
 # 4. Get the current date and time in YYYY-MM-DD_HH-MM format
 NOW=$(date +%F_%H-%M)
@@ -64,7 +64,7 @@ for ALGO in "${ALGOS[@]}"; do
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=2
 #SBATCH --gres=gpu:1
-#SBATCH --mem=8G
+#SBATCH --mem-per-cpu=8G
 #SBATCH --time=24:00:00
 #SBATCH --partition=orchid
 #SBATCH --account=orchid
@@ -72,7 +72,7 @@ for ALGO in "${ALGOS[@]}"; do
 conda activate venv
 cd "$BASE_DIR"
 export WANDB_MODE=offline
-python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --env_id "$ENV_ID" --optim_group "$TAG" --seed $SEED --wandb_group "$WANDB_GROUP" --actor_layer_size 64 --critic_layer_size 64 --no-track
+python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --env_id "$ENV_ID" --optim_group "$TAG" --seed $SEED --wandb_group "$WANDB_GROUP" --total_timesteps 10000 --num_steps 500 --capture_video_freq 10 --actor_layer_size 64 --critic_layer_size 64 --no-track
 EOT
     done
     sleep 30

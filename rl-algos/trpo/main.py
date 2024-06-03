@@ -26,6 +26,7 @@ sys.path.append(BASE_DIR)
 
 from param_tune.utils.no_op_summary_writer import NoOpSummaryWriter
 
+os.environ["WANDB__SERVICE_WAIT"] = "600"
 os.environ["MUJOCO_GL"] = "egl"
 date = time.strftime("%Y-%m-%d", time.gmtime(time.time()))
 

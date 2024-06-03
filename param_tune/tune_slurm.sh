@@ -6,6 +6,7 @@
 #SBATCH --nodes=4
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
+#SBATCH --mem-per-cpu=8G
 #SBATCH --gres=gpu:2
 #SBATCH --time=24:00:00
 #SBATCH --partition=orchid
@@ -96,4 +97,4 @@ for ((i = 1; i <= worker_num; i++)); do
     sleep 30
 done
 
-python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "climlab-v0-optim-L" --env_id "RadiativeConvectiveModel-v0" --opt_timesteps 2000 --actor_layer_size 64 --critic_layer_size 64
+python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "rce-v0-homo-L" --env_id "RadiativeConvectiveModel-v0" --opt_timesteps 5000 --num_steps 500 --actor_layer_size 64 --critic_layer_size 64
