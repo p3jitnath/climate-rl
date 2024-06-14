@@ -43,7 +43,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
         "render_fps": 30,
     }
 
-    def __init__(self, render_mode=None, locale="uk"):
+    def __init__(self, render_mode=None, locale="us"):
         self.min_emissivity = 0  # perfect reflector
         self.max_emissivity = 1  # black body
 
