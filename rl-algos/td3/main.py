@@ -93,6 +93,8 @@ class Args:
 
     num_steps: int = 200
     """the number of steps to run in each environment per policy rollout"""
+    record_steps: bool = False
+    """whether to record steps for policy analysis"""
 
     def __post_init__(self):
         if self.optimise:
@@ -142,6 +144,11 @@ def make_env(env_id, seed, idx, capture_video, run_name, capture_video_freq):
 
 args = tyro.cli(Args)
 run_name = f"{args.wandb_group}/{args.env_id}__{args.exp_name}__{args.seed}__{int(time.time())}"
+
+if args.record_steps:
+    steps_folder = BASE_DIR + f"/steps/{run_name}"
+    os.makedirs(steps_folder, exist_ok=True)
+    steps_buffer = []
 
 if args.track:
     import wandb
@@ -375,6 +382,24 @@ for global_step in range(1, args.total_timesteps + 1):
                     },
                     file,
                 )
+
+    if args.record_steps:
+        step_info = {
+            "global_step": global_step,
+            "actions": actions,
+            "next_obs": next_obs,
+            "rewards": rewards,
+        }
+        steps_buffer += [step_info]
+        if global_step % (args.capture_video_freq * args.num_steps) == (
+            (args.capture_video_freq * args.num_steps) - 1
+        ):
+            with open(f"{steps_folder}/step_{global_step}.pkl", "wb") as file:
+                pickle.dump(
+                    steps_buffer,
+                    file,
+                )
+            steps_buffer = []
 
 envs.close()
 writer.close()

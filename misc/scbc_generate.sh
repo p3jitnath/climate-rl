@@ -26,7 +26,7 @@ for run in "${runs[@]}"; do
 #SBATCH --account=orchid
 
 conda activate venv
-python $BASE_DIR/scripts/generate_results.py --exp_id $exp_id
+python $BASE_DIR/scripts/scbc_generate_results.py --exp_id $exp_id
 EOT
 done
 

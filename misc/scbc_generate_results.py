@@ -46,7 +46,8 @@ def retrieve_data(algo, ep60k):
     exp_id = EXP_ID
     if ep60k and "60k" not in EXP_ID:
         exp_id = exp_id + "-60k"
-    tfrecord_paths = glob(f"{RUNS_DIR}/*{exp_id}_*/*_{algo}_*/*")
+    tfrecord_paths = glob(f"{RUNS_DIR}/{exp_id}_*/*_{algo}_*/*")
+    tfrecord_paths += glob(f"{RUNS_DIR}/x9_{exp_id}_*/*_{algo}_*/*")
     cntr = 0
     data = {}
     for tfrecord_path in tfrecord_paths:
@@ -182,7 +183,7 @@ def format_func(value, tick_number=None):
 
 selected_algos = df.index.values[:TOP_K]
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(6.4, 4.8))
 
 for idx, algo in enumerate(selected_algos):
     episodes, _, means, std_devs = retrieve_plot_data(data, algo)

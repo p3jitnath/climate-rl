@@ -176,10 +176,10 @@ cython_debug/
 
 runs/
 videos/
+steps/
 *.out
 wandb/
 slurm/
 
 *_run_*
-
 *test*
