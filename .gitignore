@@ -183,3 +183,6 @@ slurm/
 
 *_run_*
 *test*
+
+# Exceptions
+!datasets/*.pkl
