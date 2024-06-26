@@ -1,7 +1,7 @@
 # Towards improving weather and climate models using reinforcement learning
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8099812.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-This GitHub repository contains the code, data, and figures for the Master of Research report [Towards improving weather and climate models using reinforcement learning](/mres/report.pdf).
+This GitHub repository contains the code, data, and figures for the Master of Research (MRes) report [Towards improving weather and climate models using reinforcement learning](/mres/report.pdf).
 
 ## Overview
 
@@ -49,8 +49,8 @@ To set up the project environment, follow these steps:
 
 4. [Optional] Download runs:
     ```bash
-    wget https://zenodo.org/api/records/11960239/files/runs_2024-06-17_15-38.zip
-    unzip runs_2024-06-17_15-38.zip -d runs
+    wget https://zenodo.org/records/11960239/files/runs_2024-06-17_15-38.zip
+    unzip -qq runs_2024-06-17_15-38.zip -d runs
     ```
 
 ## Usage
