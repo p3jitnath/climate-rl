@@ -67,7 +67,7 @@ python ./rl-algos/ddpg/main.py --env_id "RadiativeConvectiveModel-v0" --total_ti
 python ./rl-algos/ddpg/main.py -h
 ```
 > [!NOTE]
-> GOOD command prompt examples to run RL algorithms using SLURM can be found in `run` files [here](/misc/).
+> Command line examples to run RL algorithms using SLURM can be found in `run` files [here](/misc/).
 
 ## License
 
