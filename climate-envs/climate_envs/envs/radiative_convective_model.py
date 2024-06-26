@@ -225,6 +225,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
             # Middle subplot: Tephigram
 
             ax2 = fig.add_subplot(gs[0, 1])
+            tephi.ISOBAR_FIXED = [50, 1000, 100]
             tpg = tephi.Tephigram(
                 figure=ax2.get_figure(), anchor=[(1000, -10), (70, -25)]
             )

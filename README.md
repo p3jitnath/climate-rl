@@ -47,7 +47,12 @@ To set up the project environment, follow these steps:
     cd climate-envs/ && pip install . && cd ../
     ```
 
-4. [Optional] Download runs:
+4. Replace the `BASE_DIR` location:
+   ```
+   find . -type f -exec sed -i "s|/gws/nopw/j04/ai4er/users/pn341/climate-rl|$(pwd)|g" {} +
+   ```
+
+5. [Optional] Download runs:
     ```bash
     wget https://zenodo.org/records/11960239/files/runs_2024-06-17_15-38.zip
     unzip -qq runs_2024-06-17_15-38.zip -d runs
