@@ -36,7 +36,7 @@ To set up the project environment, follow these steps:
    ```
 
 2. Install dependencies:
-   - Using Conda:
+   - Using Conda (recommended):
      ```bash
      conda env create -f environment.yml
      conda activate climate-rl-env
