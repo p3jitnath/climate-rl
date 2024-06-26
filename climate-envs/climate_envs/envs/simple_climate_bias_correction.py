@@ -42,10 +42,6 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
         self.screen = None
         self.clock = None
 
-        self.max_physics_temperature = 380
-        self.observed_physics_temperature = 321.75
-        self.min_physics_temperature = 273.15
-
         # Define action and observation spaces
         self.action_space = spaces.Box(
             low=-self.max_heating_rate,
@@ -82,12 +78,8 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
         u = np.clip(u, -self.max_heating_rate, self.max_heating_rate)[0]
 
         # Calculate new temperature
-        observed_temperature = (
-            self.observed_physics_temperature - self.min_physics_temperature
-        ) / 100
-        physics_temperature = (
-            self.max_physics_temperature - self.min_physics_temperature
-        ) / 100
+        observed_temperature = (321.75 - 273.15) / 100
+        physics_temperature = (380 - 273.15) / 100
         division_constant = physics_temperature - observed_temperature
 
         new_temperature = current_temperature + u
@@ -121,9 +113,7 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
             np.array: The initial observation.
         """
         super().reset(seed=seed)
-        self.state = np.array(
-            [(300 - self.min_physics_temperature) / 100]
-        )  # Starting temperature
+        self.state = np.array([(300 - 273.15) / 100])  # Starting temperature
 
         if self.render_mode == "human":
             self._render_frame()
@@ -233,8 +223,8 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
         )  # Black line
 
         # Draw temperature markings every x degrees from 273.15 K to 380 K
-        min_temp_k = self.min_physics_temperature
-        max_temp_k = self.max_physics_temperature
+        min_temp_k = 273.15
+        max_temp_k = 380
         temp_range_k = max_temp_k - min_temp_k
         marking_spacing_k = 20  # Every x degrees
 

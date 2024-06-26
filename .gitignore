@@ -184,5 +184,7 @@ slurm/
 *_run_*
 *test*
 
+tmp/
+
 # Exceptions
 !datasets/*.pkl

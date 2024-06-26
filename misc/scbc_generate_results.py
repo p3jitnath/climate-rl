@@ -47,6 +47,7 @@ def retrieve_data(algo, ep60k):
     if ep60k and "60k" not in EXP_ID:
         exp_id = exp_id + "-60k"
     tfrecord_paths = glob(f"{RUNS_DIR}/{exp_id}_*/*_{algo}_*/*")
+    tfrecord_paths = [x for x in tfrecord_paths if "2024-06-15" not in x]
     tfrecord_paths += glob(f"{RUNS_DIR}/x9_{exp_id}_*/*_{algo}_*/*")
     cntr = 0
     data = {}
@@ -181,6 +182,8 @@ def format_func(value, tick_number=None):
     return txt
 
 
+plt.rcParams.update({"font.size": 12})
+
 selected_algos = df.index.values[:TOP_K]
 
 fig, ax = plt.subplots(figsize=(6.4, 4.8))
@@ -208,6 +211,7 @@ ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func))
 
 plt.savefig(
     f"{IMGS_DIR}/{EXP_ID}_log10_top{TOP_K}_episodic_returns.png",
+    dpi=300,
     bbox_inches="tight",
 )
 # plt.show()

@@ -3,6 +3,10 @@
 
 This GitHub repository contains the code, data, and figures for the Master of Research report [Towards improving weather and climate models using reinforcement learning](/mres/report.pdf).
 
+## Overview
+
+This research explores the integration of reinforcement learning (RL) with idealised climate models, marking a pioneering effort in AI-assisted climate modelling. Utilising 16 experiments across 8 prominent continuous action, model-free RL algorithms (REINFORCE, DDPG, DPG, TD3, PPO, TRPO, SAC, TQC), the study examines two distinct RL environments: Simple Climate Bias Correction and Radiative-Convective Equilibrium. Conducted on the high-performance JASMIN computing infrastructure, the findings demonstrate the effectiveness of off-policy algorithms like DDPG, TD3, and TQC in bias correction, and on-policy algorithms like DPG, PPO, and TRPO in model equilibrium. Results show significant bias reductions up to 90%, underscoring the potential of RL-based parameterisation in enhancing the accuracy and efficiency of global climate models.
+
 ## Project Structure
 
 ```
