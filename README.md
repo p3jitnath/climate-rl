@@ -1,3 +1,24 @@
+<table>
+  <tr align="center">
+    <!-- UKRI Logo -->
+    <td align="center">
+      <a href="https://www.ukri.org/">
+      <img src="https://raw.githubusercontent.com/ai4er-cdt/earthquake-predictability/main/assets/images/readme/logo_ukri.png" alt="UKRI Logo" width="400" /></a>
+    </td>
+    <!-- University of Cambridge Logo -->
+    <td align="center">
+      <a href="https://www.cam.ac.uk/">
+      <img src="https://github.com/ai4er-cdt/earthquake-predictability/blob/main/assets/images/readme/logo_cambridge.png?raw=true" alt="University of Cambridge" width="400" /> </a>
+    </td>
+    <!-- Met Office Logo -->
+    <td align="center">
+      <a href="https://www.metoffice.gov.uk/">
+      <img src="https://www.metoffice.gov.uk/binaries/content/gallery/metofficegovuk/images/about-us/website/mo_master_for_dark_backg_rbg.png" alt="Met Office Logo" width="400" /> </a>
+    </td>
+  </tr>
+</table>
+
+
 # Towards improving weather and climate models using reinforcement learning
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8099812.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing)
 
