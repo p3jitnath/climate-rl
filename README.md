@@ -20,9 +20,9 @@
 
 
 # Towards improving weather and climate models using reinforcement learning
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8099812.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11960239.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing)
 
-This GitHub repository contains the code, data, and figures for the Master of Research (MRes) report [Towards improving weather and climate models using reinforcement learning](/mres/report.pdf).
+This GitHub repository contains the code, data, and figures for the Master of Research (MRes) report **Towards improving weather and climate models using reinforcement learning**.
 
 ## Overview
 
@@ -103,6 +103,10 @@ python ./rl-algos/ddpg/main.py -h
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Funding
+
+P. Nath was supported by the [UKRI Centre for Doctoral Training in Application of Artificial Intelligence to the study of Environmental Risks](https://ai4er-cdt.esc.cam.ac.uk/) [EP/S022961/1].
 
 ## Contact
 
