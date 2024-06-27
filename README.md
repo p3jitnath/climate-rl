@@ -1,5 +1,5 @@
 # Towards improving weather and climate models using reinforcement learning
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8099812.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8099812.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing)
 
 This GitHub repository contains the code, data, and figures for the Master of Research (MRes) report [Towards improving weather and climate models using reinforcement learning](/mres/report.pdf).
 
@@ -39,7 +39,7 @@ To set up the project environment, follow these steps:
    - Using Conda (recommended):
      ```bash
      conda env create -f environment.yml
-     conda activate climate-rl-env
+     conda activate climate-rl-mres
      ```
 
 3. Install the climate RL environments:
@@ -47,9 +47,10 @@ To set up the project environment, follow these steps:
     cd climate-envs/ && pip install . && cd ../
     ```
 
-4. Replace the `BASE_DIR` location:
+4. Replace the `BASE_DIR` location and the conda environment name:
    ```
    find . -type f -exec sed -i "s|/gws/nopw/j04/ai4er/users/pn341/climate-rl|$(pwd)|g" {} +
+   find . -type f -exec sed -i "s|venv|climate-rl-mres|g" {} +
    ```
 
 5. [Optional] Download runs:
@@ -73,6 +74,9 @@ python ./rl-algos/ddpg/main.py -h
 ```
 > [!NOTE]
 > Command line examples to run RL algorithms using SLURM can be found in `run` files [here](/misc/).
+
+3. A demo Colab notebook to run `SimpleClimateBiasCorrection-v0` can be found [here](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing).
+
 
 ## License
 
