@@ -4,8 +4,23 @@ channels:
   - nvidia
   - conda-forge
   - intel
-  - defaults
 dependencies:
+  - ipython
+  - numpy
+  - gymnasium
+  - python=3.11
+  - pytorch-cuda
+  - pytorch
+  - ray-default
+  - ray-tune
+  - stable-baselines3 
+  - tensorboard
+  - torchaudio
+  - torchvision
+  - tqdm
+  - tyro
+  - wandb
+
   - _libgcc_mutex=0.1
   - _openmp_mutex=4.5
   - absl-py=2.1.0

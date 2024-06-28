@@ -19,7 +19,13 @@ from ddpg_critic import Critic
 from stable_baselines3.common.buffers import ReplayBuffer
 from torch.utils.tensorboard import SummaryWriter
 
-BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
+current_dir = os.path.dirname(__file__)
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from config import get_base_dir
+
+BASE_DIR = get_base_dir()
 sys.path.append(BASE_DIR)
 
 from param_tune.utils.no_op_summary_writer import NoOpSummaryWriter
