@@ -60,13 +60,13 @@ def objective(config):
         else:
             cmd += f"""--{param} {config['params'][param]} """
 
-    subprocess.run(cmd.split())
+    subprocess.Popen(cmd.split())
 
     counter = 0
     while not os.path.exists(results_path):
-        time.sleep(10)
+        time.sleep(30)
         counter += 1
-        if counter >= 12:
+        if counter >= 10:
             raise RuntimeError("An error has occured.")
 
     with open(results_path, "rb") as f:

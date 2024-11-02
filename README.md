@@ -3,30 +3,30 @@
     <!-- UKRI Logo -->
     <td align="center">
       <a href="https://www.ukri.org/">
-      <img src="https://raw.githubusercontent.com/ai4er-cdt/earthquake-predictability/main/assets/images/readme/logo_ukri.png" alt="UKRI Logo" width="400" /></a>
+      <img src="assets/ukri-logo-coloured.png" alt="UKRI Logo" width="400" /></a>
     </td>
     <!-- University of Cambridge Logo -->
     <td align="center">
       <a href="https://www.cam.ac.uk/">
-      <img src="https://github.com/ai4er-cdt/earthquake-predictability/blob/main/assets/images/readme/logo_cambridge.png?raw=true" alt="University of Cambridge" width="400" /> </a>
+      <img src="assets/cambridge-logo-coloured.jpg" alt="University of Cambridge" width="400" /> </a>
     </td>
     <!-- Met Office Logo -->
     <td align="center">
       <a href="https://www.metoffice.gov.uk/">
-      <img src="https://www.metoffice.gov.uk/binaries/content/gallery/metofficegovuk/images/about-us/website/mo_master_for_dark_backg_rbg.png" alt="Met Office Logo" width="400" /> </a>
+      <img src="assets/met-office-logo-coloured.png" alt="Met Office Logo" width="400" /> </a>
     </td>
   </tr>
 </table>
 
 
-# Towards improving weather and climate models using reinforcement learning
+# RAIN: Reinforcement Algorithms for Improving Numerical Weather and Climate Models
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11960239.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing)
 
-This GitHub repository contains the code, data, and figures for the Master of Research (MRes) report [**Towards improving weather and climate models using reinforcement learning**](https://drive.google.com/drive/folders/1i8S03_6a_B_y1GjFjJV9OxePbENxxeJz?usp=drive_link).
+This GitHub repository contains the code, data, and figures for the paper **RAIN: Reinforcement Algorithms for Improving Numerical Weather and Climate Models** ([arXiv](https://arxiv.org/abs/2408.16118), [MRes Report](https://drive.google.com/drive/folders/1i8S03_6a_B_y1GjFjJV9OxePbENxxeJz?usp=drive_link)).
 
 ## Overview
 
-This research explores the integration of reinforcement learning (RL) with idealised climate models, marking a good first effort in AI-assisted climate modelling. Utilising 16 experiments across 8 prominent continuous action, model-free RL algorithms (REINFORCE, DDPG, DPG, TD3, PPO, TRPO, SAC, TQC), the study examines two distinct RL environments: Simple Climate Bias Correction and Radiative-Convective Equilibrium. Performed on the JASMIN HPC, the findings demonstrate the effectiveness of off-policy exploration heavy algorithms like DDPG, TD3, and TQC in Simple Climate Bias Correction, and on-policy exploitation centric algorithms like DPG, PPO, and TRPO in Radiative-Convective Equilibrium. Results show significant bias reductions up to 90%, underscoring the potential of RL-based parameterisation in enhancing the accuracy and efficiency of global climate models.
+This study explores the integration of reinforcement learning (RL) with idealised climate models, marking a good first effort in AI-assisted climate modelling. Utilising 16 experiments across 8 prominent continuous action, model-free RL algorithms (REINFORCE, DDPG, DPG, TD3, PPO, TRPO, SAC, TQC), the study examines two distinct RL environments: Simple Climate Bias Correction and Radiative-Convective Equilibrium. Performed on the JASMIN HPC, the findings demonstrate the effectiveness of off-policy exploration heavy algorithms like DDPG, TD3, and TQC in Simple Climate Bias Correction, and on-policy exploitation centric algorithms like DPG, PPO, and TRPO in Radiative-Convective Equilibrium. Results show significant bias reductions up to 90%, underscoring the potential of RL-based parameterisation in enhancing the accuracy and efficiency of global climate models.
 
 ## Project Structure
 
