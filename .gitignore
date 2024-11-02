@@ -188,3 +188,4 @@ tmp/
 
 # Exceptions
 !datasets/*.pkl
+!assets/*

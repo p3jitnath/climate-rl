@@ -8,7 +8,7 @@
     <!-- University of Cambridge Logo -->
     <td align="center">
       <a href="https://www.cam.ac.uk/">
-      <img src="assets/cambridge-logo-coloured.jpg" alt="University of Cambridge" width="400" /> </a>
+      <img src="assets/cambridge-logo-coloured.png" alt="University of Cambridge" width="400" /> </a>
     </td>
     <!-- Met Office Logo -->
     <td align="center">
@@ -20,7 +20,7 @@
 
 
 # RAIN: Reinforcement Algorithms for Improving Numerical Weather and Climate Models
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11960239.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing)
+[![arXiv](https://img.shields.io/badge/cs.LG-2408.16118-b31b1b?logo=arXiv&logoColor=red)](https://arxiv.org/abs/2408.16118) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11960239.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing)
 
 This GitHub repository contains the code, data, and figures for the paper **RAIN: Reinforcement Algorithms for Improving Numerical Weather and Climate Models** ([arXiv](https://arxiv.org/abs/2408.16118), [MRes Report](https://drive.google.com/drive/folders/1i8S03_6a_B_y1GjFjJV9OxePbENxxeJz?usp=drive_link)).
 
