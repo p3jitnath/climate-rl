@@ -43,7 +43,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
         "render_fps": 30,
     }
 
-    def __init__(self, render_mode=None, locale="us"):
+    def __init__(self, render_mode=None, locale="uk"):
         self.min_emissivity = 0  # perfect reflector
         self.max_emissivity = 1  # black body
 
@@ -236,8 +236,9 @@ class RadiativeConvectiveModelEnv(gym.Env):
             # Middle subplot: Tephigram
 
             ax2 = fig.add_subplot(gs[0, 1])
+            tephi.ISOBAR_FIXED = [50, 1000, 100]
             tpg = tephi.Tephigram(
-                figure=ax2.get_figure(), anchor=[(1000, -10), (70, -25)]
+                figure=ax2.get_figure(), anchor=[(1000, -15), (70, -25)]
             )
             tpg.plot(
                 self._get_tephigram_data(self.rcm),

@@ -27,3 +27,9 @@ register(
     entry_point="climate_envs.envs:RadiativeConvectiveModelEnv",
     max_episode_steps=500,
 )
+
+register(
+    id="RadiativeConvectiveModel17-v0",
+    entry_point="climate_envs.envs.radiative_convective_model_17:RadiativeConvectiveModelEnv",
+    max_episode_steps=500,
+)

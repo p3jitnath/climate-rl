@@ -67,7 +67,7 @@ if [[ ${#ADDR[0]} -gt 16 ]]; then
 else
   head_node_ip=${ADDR[0]}
 fi
-echo "IPV6 address detected. We split the IPV4 address as $head_node_ip"
+echo "IPv6 address detected. We split the IPv4 address as $head_node_ip"
 fi
 
 # __doc_head_address_end__
@@ -97,4 +97,4 @@ for ((i = 1; i <= worker_num; i++)); do
     sleep 30
 done
 
-python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "rce-v0-homo-L" --env_id "RadiativeConvectiveModel-v0" --opt_timesteps 5000 --num_steps 500 --actor_layer_size 64 --critic_layer_size 64
+python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "rce-v1-optim-L" --env_id "RadiativeConvectiveModel-v1" --opt_timesteps 5000 --num_steps 500 # --actor_layer_size 64 --critic_layer_size 64
