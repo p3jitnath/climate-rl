@@ -97,4 +97,4 @@ for ((i = 1; i <= worker_num; i++)); do
     sleep 30
 done
 
-python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "rce-v1-optim-L" --env_id "RadiativeConvectiveModel-v1" --opt_timesteps 5000 --num_steps 500 # --actor_layer_size 64 --critic_layer_size 64
+python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "rce17-v1-homo-64L" --env_id "RadiativeConvectiveModel17-v1" --opt_timesteps 5000 --num_steps 500 --actor_layer_size 64 --critic_layer_size 64

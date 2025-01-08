@@ -53,16 +53,36 @@ class RadiativeConvectiveModelEnv(gym.Env):
         self.min_temperature = -90
         self.max_temperature = 90
 
+        self.min_specific_humidity = 0
+        self.max_specific_humidity = 5
+
+        self.min_temperature = -90
+        self.max_temperature = 90
+
         self.action_space = spaces.Box(
             low=np.array(
-                [self.min_emissivity, self.min_adj_lapse_rate],
+                [
+                    self.min_emissivity,
+                    *[self.min_adj_lapse_rate for x in range(len(Tobs.level))],
+                    *[
+                        self.min_specific_humidity
+                        for x in range(len(Tobs.level) - 1)
+                    ],
+                ],
                 dtype=np.float32,
             ),
             high=np.array(
-                [self.max_emissivity, self.max_adj_lapse_rate],
+                [
+                    self.max_emissivity,
+                    *[self.max_adj_lapse_rate for x in range(len(Tobs.level))],
+                    *[
+                        self.max_specific_humidity
+                        for x in range(len(Tobs.level) - 1)
+                    ],
+                ],
                 dtype=np.float32,
             ),
-            shape=(2,),
+            shape=(1 + len(Tobs.level) + len(Tobs.level) - 1,),
             dtype=np.float32,
         )
         self.observation_space = spaces.Box(
@@ -102,7 +122,10 @@ class RadiativeConvectiveModelEnv(gym.Env):
     def _get_params(self):
         emissivity = self.rcm.subprocess["Radiation (net)"].emissivity
         adj_lapse_rate = self.rcm.subprocess["Convection"].adj_lapse_rate
-        params = np.array([emissivity, adj_lapse_rate], dtype=np.float32)
+        specific_humidity = self.rcm.subprocess["Water Vapour"].q
+        params = np.array(
+            [emissivity, *adj_lapse_rate, *specific_humidity], dtype=np.float32
+        )
         return params
 
     def _get_state(self):
@@ -110,7 +133,12 @@ class RadiativeConvectiveModelEnv(gym.Env):
         return state
 
     def step(self, action):
-        emissivity, adj_lapse_rate = action[0], action[1]
+        emissivity, adj_lapse_rate, specific_humidity = (
+            action[0],
+            action[1 : 1 + len(Tobs.level)],
+            action[1 + len(Tobs.level) :],
+        )
+        specific_humidity /= 1e3
 
         emissivity = np.clip(
             emissivity, self.min_emissivity, self.max_emissivity
@@ -118,11 +146,18 @@ class RadiativeConvectiveModelEnv(gym.Env):
         adj_lapse_rate = np.clip(
             adj_lapse_rate, self.min_adj_lapse_rate, self.max_adj_lapse_rate
         )
+        specific_humidity = np.clip(
+            specific_humidity,
+            self.min_specific_humidity,
+            self.max_specific_humidity,
+        )
+
         # adj_lapse_rate = (self.max_adj_lapse_rate - self.min_adj_lapse_rate) * scipy.special.expit(adj_lapse_rate)
         # adj_lapse_rate += self.min_adj_lapse_rate
 
         self.rcm.subprocess["Radiation (net)"].emissivity = emissivity
         self.rcm.subprocess["Convection"].adj_lapse_rate = adj_lapse_rate
+        self.rcm.subprocess["Water Vapour"].q = specific_humidity
         self.rcm.step_forward()
         self.climlab_rcm.step_forward()
 
@@ -137,7 +172,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
         super().reset(seed=seed)
         rce_state = climlab.column_state(lev=Tobs.level[1:], water_depth=2.5)
         h2o = climlab.radiation.ManabeWaterVapor(
-            state=rce_state, lev=Tobs.level[1:]
+            name="Water Vapour", state=rce_state, lev=Tobs.level[1:]
         )
         rad = climlab.radiation.RRTMG(
             name="Radiation (net)",
@@ -151,11 +186,11 @@ class RadiativeConvectiveModelEnv(gym.Env):
         conv = climlab.convection.ConvectiveAdjustment(
             name="Convection",
             state=rce_state,
-            adj_lapse_rate=6.5,
+            adj_lapse_rate="MALR",
             timestep=rad.timestep,
         )
 
-        self.rcm = climlab.couple([rad, conv], name="RCE Model w/ RL")
+        self.rcm = climlab.couple([h2o, rad, conv], name="RCE Model w/ RL")
 
         # Start from Radiative Equlibrium
         # for n in range(1000):
@@ -172,29 +207,42 @@ class RadiativeConvectiveModelEnv(gym.Env):
         return self._get_obs(), self._get_info()
 
     def _render_frame(self):
-        fig = plt.figure(figsize=(27, 9))
+        fig = plt.figure(figsize=(29, 9))
         gs = GridSpec(1, 3, figure=fig)
 
         params = self._get_params()
 
         Tprofile_RL = self._get_temp()
-        T_diff_RL = Tobs.sel(level=[100, 200]) - Tprofile_RL.sel(
-            level=[100, 200]
+        T_diff_RL = Tobs.sel(level=[100, 200, 1000]) - Tprofile_RL.sel(
+            level=[100, 200, 1000]
         )
         T_diff_RL = np.abs(T_diff_RL)
 
         Tprofile_climlab = self._get_temp(model="climlab")
-        T_diff_climlab = Tobs.sel(level=[100, 200]) - Tprofile_climlab.sel(
-            level=[100, 200]
-        )
+        T_diff_climlab = Tobs.sel(
+            level=[100, 200, 1000]
+        ) - Tprofile_climlab.sel(level=[100, 200, 1000])
         T_diff_climlab = np.abs(T_diff_climlab)
 
         # Left subplot: emissivity and adj_lapse_rate as bar plots
         ax1 = fig.add_subplot(gs[0, 0])
 
-        ax1_labels = ["Emissivity", "Adj Lapse Rate"]
-        ax1_colors = ["tab:blue", "tab:blue"]
-        ax1_bars = ax1.bar(ax1_labels, params, color=ax1_colors, width=0.75)
+        ax1_labels = [
+            "Emissivity",
+            "Mean Adj Lapse Rate",
+            "Mean Specific Humidity",
+        ]
+        ax1_colors = ["tab:blue", "tab:blue", "tab:blue"]
+        ax1_bars = ax1.bar(
+            ax1_labels,
+            [
+                params[0],
+                np.mean(params[1 : 1 + len(Tobs.level)]),
+                1e3 * np.mean(params[1 + len(Tobs.level) :]),
+            ],
+            color=ax1_colors,
+            width=0.75,
+        )
         ax1.set_ylim(0, 10)
         ax1.set_ylabel("Value", fontsize=14)
         ax1.set_title("Parameters")
@@ -227,7 +275,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
             ax2 = fig.add_subplot(gs[0, 1])
             tephi.ISOBAR_FIXED = [50, 1000, 100]
             tpg = tephi.Tephigram(
-                figure=ax2.get_figure(), anchor=[(1000, -10), (70, -25)]
+                figure=ax2.get_figure(), anchor=[(1000, -15), (70, -25)]
             )
             tpg.plot(
                 self._get_tephigram_data(self.rcm),
@@ -253,23 +301,27 @@ class RadiativeConvectiveModelEnv(gym.Env):
         # Right subplot: emissivity and adj_lapse_rate as bar plots
         ax3 = fig.add_subplot(gs[0, 2])
         ax3_bar_width = 0.4
-        ax3_labels = ["T_diff @ 100 hPa", "T_diff @ 200 hPa"]
+        ax3_labels = [
+            "T_diff @ 100 hPa",
+            "T_diff @ 200 hPa",
+            "T_diff @ 1000 hPa",
+        ]
         ax3_ind = np.arange(1, 1 + len(ax3_labels))
-        ax3_colors_RL = ["tab:blue", "tab:blue"]
+        ax3_colors_RL = ["tab:blue", "tab:blue", "tab:blue"]
         ax3_bars_RL = ax3.bar(
             ax3_ind - (ax3_bar_width / 2),
             T_diff_RL,
             color=ax3_colors_RL,
             width=ax3_bar_width,
         )
-        ax3_colors_climlab = ["tab:orange", "tab:orange"]
+        ax3_colors_climlab = ["tab:orange", "tab:orange", "tab:orange"]
         ax3_bars_climlab = ax3.bar(
             ax3_ind + (ax3_bar_width / 2),
             T_diff_climlab,
             color=ax3_colors_climlab,
             width=ax3_bar_width,
         )
-        ax3.set_ylim(0, 10)
+        ax3.set_ylim(0, 20)
         ax3.set_ylabel("Difference [$\degree$C]", fontsize=14)
         ax3.set_title("Temperature Differences")
         ax3.set_xticks(ax3_ind)

@@ -1,0 +1,72 @@
+{
+    "ddpg": {
+        "learning_rate": 0.0024561859020519597,
+        "tau": 0.07981709935299988,
+        "batch_size": 128,
+        "exploration_noise": 0.20289045322787208,
+        "policy_frequency": 10,
+        "noise_clip": 0.2,
+        "algo": "ddpg",
+        "date": "2024-12-11",
+        "episodic_return": -43672.390625
+    },
+    "dpg": {
+        "learning_rate": 0.00016882609225878797,
+        "exploration_noise": 0.20214946051551314,
+        "policy_frequency": 10,
+        "algo": "dpg",
+        "date": "2024-12-11",
+        "episodic_return": -43678.76171875
+    },
+    "ppo": {
+        "learning_rate": 0.009573887527234006,
+        "num_minibatches": 20,
+        "update_epochs": 9,
+        "clip_coef": 0.2159741241388737,
+        "max_grad_norm": 0.8,
+        "algo": "ppo",
+        "date": "2024-12-11",
+        "episodic_return": -43513.27734375
+    },
+    "reinforce": {
+        "learning_rate": 0.0005895451337238518,
+        "algo": "reinforce",
+        "date": "2024-12-11",
+        "episodic_return": -43872.71875
+    },
+    "sac": {
+        "tau": 0.007046718025631511,
+        "batch_size": 128,
+        "policy_lr": 0.007507770934798218,
+        "q_lr": 0.0019267580916281356,
+        "policy_frequency": 7,
+        "target_network_frequency": 1,
+        "noise_clip": 0.5,
+        "alpha": 0.30000000000000004,
+        "algo": "sac",
+        "date": "2024-12-11",
+        "episodic_return": -43483.18359375
+    },
+    "td3": {
+        "learning_rate": 0.0044434130312587024,
+        "tau": 0.0950171342588281,
+        "batch_size": 128,
+        "policy_noise": 0.11317078071396336,
+        "exploration_noise": 0.2074340925970135,
+        "policy_frequency": 3,
+        "noise_clip": 0.30000000000000004,
+        "algo": "td3",
+        "date": "2024-12-11",
+        "episodic_return": -43531.36328125
+    },
+    "trpo": {
+        "learning_rate": 0.006146659496934928,
+        "num_minibatches": 50,
+        "update_epochs": 3,
+        "clip_coef": 0.2631229919728017,
+        "max_grad_norm": 0.7,
+        "algo": "trpo",
+        "date": "2024-12-11",
+        "episodic_return": -43734.4609375
+    }
+}

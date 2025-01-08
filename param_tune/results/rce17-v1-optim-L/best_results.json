@@ -1,0 +1,94 @@
+{
+    "ddpg": {
+        "learning_rate": 0.0014334116936816038,
+        "tau": 0.09236604994325416,
+        "batch_size": 128,
+        "exploration_noise": 0.17183384095989884,
+        "policy_frequency": 6,
+        "noise_clip": 1.0,
+        "actor_critic_layer_size": 64,
+        "algo": "ddpg",
+        "date": "2024-12-11",
+        "episodic_return": -43497.33203125
+    },
+    "dpg": {
+        "learning_rate": 0.004538162940661398,
+        "exploration_noise": 0.19829062557868782,
+        "policy_frequency": 7,
+        "actor_critic_layer_size": 128,
+        "algo": "dpg",
+        "date": "2024-12-11",
+        "episodic_return": -43700.12109375
+    },
+    "ppo": {
+        "learning_rate": 0.009910519569259764,
+        "num_minibatches": 20,
+        "update_epochs": 6,
+        "clip_coef": 0.22228082317355485,
+        "max_grad_norm": 0.8,
+        "actor_critic_layer_size": 256,
+        "algo": "ppo",
+        "date": "2024-12-11",
+        "episodic_return": -43342.859375
+    },
+    "reinforce": {
+        "learning_rate": 0.0033871424546217666,
+        "actor_critic_layer_size": 32,
+        "algo": "reinforce",
+        "date": "2024-12-11",
+        "episodic_return": -43880.8671875
+    },
+    "sac": {
+        "tau": 0.042716241455194134,
+        "batch_size": 128,
+        "policy_lr": 0.005467422919761922,
+        "q_lr": 0.005537751604267961,
+        "policy_frequency": 5,
+        "target_network_frequency": 4,
+        "noise_clip": 0.6000000000000001,
+        "alpha": 0.30000000000000004,
+        "actor_critic_layer_size": 256,
+        "algo": "sac",
+        "date": "2024-12-11",
+        "episodic_return": -43691.94140625
+    },
+    "td3": {
+        "learning_rate": 0.0024704692953366894,
+        "tau": 0.00884607469169266,
+        "batch_size": 64,
+        "policy_noise": 0.1463958162572765,
+        "exploration_noise": 0.21469610520667526,
+        "policy_frequency": 7,
+        "noise_clip": 0.8,
+        "actor_critic_layer_size": 64,
+        "algo": "td3",
+        "date": "2024-12-11",
+        "episodic_return": -43653.82421875
+    },
+    "tqc": {
+        "tau": 0.06220358826830985,
+        "batch_size": 64,
+        "n_quantiles": 35,
+        "n_critics": 15,
+        "actor_adam_lr": 0.009072908412437887,
+        "critic_adam_lr": 0.0012008550748308984,
+        "alpha_adam_lr": 0.0049769885324795066,
+        "policy_frequency": 9,
+        "target_network_frequency": 10,
+        "actor_critic_layer_size": 128,
+        "algo": "tqc",
+        "date": "2024-12-11",
+        "episodic_return": -43455.3984375
+    },
+    "trpo": {
+        "learning_rate": 0.0047400622819702065,
+        "num_minibatches": 50,
+        "update_epochs": 2,
+        "clip_coef": 0.29081020545174446,
+        "max_grad_norm": 0.7,
+        "actor_critic_layer_size": 256,
+        "algo": "trpo",
+        "date": "2024-12-11",
+        "episodic_return": -43545.7421875
+    }
+}

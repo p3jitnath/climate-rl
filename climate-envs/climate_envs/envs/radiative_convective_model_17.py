@@ -178,7 +178,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
         return self._get_obs(), self._get_info()
 
     def _render_frame(self):
-        fig = plt.figure(figsize=(27, 9))
+        fig = plt.figure(figsize=(29, 9))
         gs = GridSpec(1, 3, figure=fig)
 
         params = self._get_params()
@@ -280,7 +280,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
             color=ax3_colors_climlab,
             width=ax3_bar_width,
         )
-        ax3.set_ylim(0, 10)
+        ax3.set_ylim(0, 20)
         ax3.set_ylabel("Difference [$\degree$C]", fontsize=14)
         ax3.set_title("Temperature Differences")
         ax3.set_xticks(ax3_ind)

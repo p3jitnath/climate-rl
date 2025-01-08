@@ -2,7 +2,7 @@
 
 BASE_DIR="/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 
-runs=("$BASE_DIR"/param_tune/results/rce-v1-*)
+runs=("$BASE_DIR"/param_tune/results/rce17-v1-*)
 
 for run in "${runs[@]}"; do
     exp_id=$(basename "$run")
