@@ -13,6 +13,7 @@
 #SBATCH --account=orchid
 
 BASE_DIR=/gws/nopw/j04/ai4er/users/pn341/climate-rl
+LOG_DIR="$BASE_DIR/slurm"
 
 set -x
 
@@ -80,7 +81,9 @@ echo "IP Head: $ip_head"
 echo "Starting HEAD at $head_node"
 srun --nodes=1 --ntasks=1 -w "$head_node" \
     ray start --head --node-ip-address="$head_node_ip" --port=$port \
-    --num-cpus "${SLURM_CPUS_PER_TASK}" --include-dashboard=False --num-gpus 2 --block &
+    --num-cpus "${SLURM_CPUS_PER_TASK}" --include-dashboard=False --num-gpus 2 --block & \
+    --output="$LOG_DIR/ray_slurm_${SLURM_JOB_ID}.out" \
+    --error="$LOG_DIR/ray_slurm_${SLURM_JOB_ID}.err"
 
 # optional, though may be useful in certain versions of Ray < 1.0.
 sleep 30
@@ -93,8 +96,10 @@ for ((i = 1; i <= worker_num; i++)); do
     echo "Starting WORKER $i at $node_i"
     srun --nodes=1 --ntasks=1 -w "$node_i" \
         ray start --address "$ip_head" \
-        --num-cpus "${SLURM_CPUS_PER_TASK}" --num-gpus 2 --block &
+        --num-cpus "${SLURM_CPUS_PER_TASK}" --num-gpus 2 --block & \
+        --output="$LOG_DIR/ray_slurm_${SLURM_JOB_ID}.out" \
+        --error="$LOG_DIR/ray_slurm_${SLURM_JOB_ID}.err"
     sleep 30
 done
 
-python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "rce17-v1-homo-64L" --env_id "RadiativeConvectiveModel17-v1" --opt_timesteps 5000 --num_steps 500 --actor_layer_size 64 --critic_layer_size 64
+python -u $BASE_DIR/param_tune/tune.py --algo $ALGO --exp_id "v0-optim-L-60k" --env_id "SimpleClimateBiasCorrection-v0" --opt_timesteps 60000 --num_steps 200 # --actor_layer_size 64 --critic_layer_size 64

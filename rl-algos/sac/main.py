@@ -63,13 +63,13 @@ class Args:
     tau: float = 0.005
     """target smoothing coefficient (default: 0.005)"""
     batch_size: int = 256
-    """the batch size of sample from the reply memory"""
+    """the batch size of sample from the replay memory"""
     learning_starts: int = 1000
     """timestep to start learning"""
     policy_lr: float = 3e-4
     """the learning rate of the policy network optimizer"""
     q_lr: float = 1e-3
-    """the learning rate of the Q network network optimizer"""
+    """the learning rate of the Q network optimizer"""
     policy_frequency: int = 2
     """the frequency of training policy (delayed)"""
     target_network_frequency: int = (

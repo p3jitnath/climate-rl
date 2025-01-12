@@ -1,6 +1,15 @@
 {
+    "avg": {
+        "actor_adam_lr": 0.005005193373035849,
+        "critic_adam_lr": 0.003382499164375007,
+        "alpha_lr": 0.00011594572248486428,
+        "actor_critic_layer_size": 32,
+        "algo": "avg",
+        "date": "2025-01-10",
+        "episodic_return": -0.013797550462186337
+    },
     "ddpg": {
-        "learning_rate": 0.007491729238369129,
+        "learning_rate": 0.0077472813016042,
         "tau": 0.08010483014631538,
         "batch_size": 128,
         "exploration_noise": 0.10238920554669176,
@@ -8,8 +17,8 @@
         "noise_clip": 1.0,
         "actor_critic_layer_size": 128,
         "algo": "ddpg",
-        "date": "2024-04-26",
-        "episodic_return": -0.05396014079451561
+        "date": "2025-01-10",
+        "episodic_return": -0.05278603732585907
     },
     "dpg": {
         "learning_rate": 0.0019289870668907387,

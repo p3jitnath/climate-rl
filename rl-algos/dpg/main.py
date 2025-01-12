@@ -65,7 +65,7 @@ class Args:
     tau: float = 0.005
     """target smoothing coefficient (default: 0.005)"""
     batch_size: int = 256
-    """the batch size of sample from the reply memory"""
+    """the batch size of sample from the replay memory"""
     exploration_noise: float = 0.1
     """the scale of exploration noise"""
     learning_starts: int = 1000

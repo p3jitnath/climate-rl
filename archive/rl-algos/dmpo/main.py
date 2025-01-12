@@ -65,7 +65,7 @@ class Args:
     grad_norm_clip: float = 40.0
     """gradients norm clipping coefficient"""
     batch_size: int = 256
-    """the batch size of sample from the reply memory"""
+    """the batch size of sample from the replay memory"""
     learning_starts: int = config["learning_starts"]
     """timestep to start learning"""
     policy_q_lr: float = 3e-4

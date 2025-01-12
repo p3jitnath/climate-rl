@@ -60,7 +60,7 @@ To set up the project environment, follow these steps:
    - Using Conda (recommended):
      ```bash
      conda env create -f environment.yml
-     conda activate climate-rl
+     conda activate venv
      ```
 
 3. Install the climate RL environments:
@@ -71,7 +71,6 @@ To set up the project environment, follow these steps:
 4. Replace the `BASE_DIR` location and the conda environment name:
    ```
    find . -type f -exec sed -i "s|/gws/nopw/j04/ai4er/users/pn341/climate-rl|$(pwd)|g" {} +
-   find . -type f -exec sed -i "s|venv|climate-rl|g" {} +
    ```
 
 5. [Optional] Download runs:

@@ -78,7 +78,7 @@ class Args:
     tau: float = 0.005
     """target smoothing coefficient (default: 0.005)"""
     batch_size: int = 256
-    """the batch size of sample from the reply memory"""
+    """the batch size of sample from the replay memory"""
     handle_timeout_termination: bool = False
     """treat TimeLimit.truncated == True as done == False"""
     n_quantiles: int = 25
@@ -94,7 +94,7 @@ class Args:
     actor_adam_lr: float = 3e-4
     """the learning rate of the policy network optimizer"""
     critic_adam_lr: float = 3e-4
-    """the learning rate of the Q network network optimizer"""
+    """the learning rate of the Q network optimizer"""
     alpha_adam_lr: float = 3e-4
     """the learning rate to tune target entropy"""
     autotune: bool = True

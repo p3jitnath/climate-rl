@@ -64,10 +64,12 @@ def objective(config):
 
     counter = 0
     while not os.path.exists(results_path):
-        time.sleep(30)
+        time.sleep(15)
         counter += 1
-        if counter >= 10:
-            raise RuntimeError("An error has occured.")
+        if counter >= 300:
+            raise RuntimeError(
+                "An error has occured. Refer to tune.py source."
+            )
 
     with open(results_path, "rb") as f:
         results_dict = pickle.load(f)
@@ -123,6 +125,7 @@ else:
         run_config=train.RunConfig(
             storage_path=storage_path,
             name=f"pn341_ray_slurm_{args.exp_id}_{args.algo}",
+            stop={"time_total_s": 2 * 60 * 60},
         ),
     )
 results = tuner.fit()

@@ -79,3 +79,10 @@ config["tqc"] = {
     "target_network_frequency": tune.choice([x for x in range(1, 11)]),
     "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
 }
+
+config["avg"] = {
+    "actor_adam_lr": tune.uniform(1e-4, 1e-2),
+    "critic_adam_lr": tune.uniform(1e-4, 1e-2),
+    "alpha_lr": tune.uniform(1e-4, 1e-2),
+    "actor_critic_layer_size": tune.choice([2**x for x in range(5, 9)]),
+}
