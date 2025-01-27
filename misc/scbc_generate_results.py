@@ -36,10 +36,12 @@ args = tyro.cli(Args)
 
 EXP_ID = args.exp_id
 THRESHOLD = THRESHOLDS[EXP_ID.split("-")[0]]
+
+EPISODE_COUNT = 60000 // 200
 N_EXPERIMENTS = 10
 TOP_K = 3
 
-algos = ["ddpg", "dpg", "ppo", "reinforce", "sac", "td3", "trpo", "tqc"]
+algos = ["ddpg", "dpg", "ppo", "reinforce", "sac", "td3", "trpo", "tqc", "avg"]
 
 
 def retrieve_data(algo, ep60k):
@@ -94,7 +96,9 @@ def retrieve_plot_data(data, algo):
     means = [np.mean(x) for x in returns]
     std_devs = [np.std(x) / np.sqrt(N_EXPERIMENTS) for x in returns]
 
-    assert len(means) == len(std_devs) == 300, f"EPISODES NOT OK ... {algo}"
+    assert (
+        len(means) == len(std_devs) == EPISODE_COUNT
+    ), f"EPISODES NOT OK ... {algo}"
     return episodes, returns, means, std_devs
 
 

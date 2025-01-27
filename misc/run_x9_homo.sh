@@ -44,7 +44,8 @@ fi
 BASE_DIR="/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 
 # 3. List of algorithms
-ALGOS=("ddpg" "dpg" "td3" "reinforce" "trpo" "ppo" "sac" "tqc")
+# ALGOS=("ddpg" "dpg" "td3" "reinforce" "trpo" "ppo" "sac" "tqc" "avg")
+ALGOS=("tqc")
 
 # 4. Get the current date and time in YYYY-MM-DD_HH-MM format
 NOW=$(date +%F_%H-%M)

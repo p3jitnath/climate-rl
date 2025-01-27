@@ -1,12 +1,12 @@
 {
     "avg": {
-        "actor_adam_lr": 0.005005193373035849,
-        "critic_adam_lr": 0.003382499164375007,
-        "alpha_lr": 0.00011594572248486428,
-        "actor_critic_layer_size": 32,
+        "actor_adam_lr": 0.005293751222134947,
+        "critic_adam_lr": 0.001645874609219963,
+        "alpha_lr": 0.00013431892838949177,
+        "actor_critic_layer_size": 128,
         "algo": "avg",
-        "date": "2025-01-10",
-        "episodic_return": -0.013797550462186337
+        "date": "2025-01-22",
+        "episodic_return": -0.012337911874055862
     },
     "ddpg": {
         "learning_rate": 0.0077472813016042,

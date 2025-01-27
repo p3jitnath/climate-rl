@@ -20,7 +20,7 @@ for run in "${runs[@]}"; do
 #SBATCH --error=$BASE_DIR/slurm/results_$exp_id_%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=2
 #SBATCH --time=01:00:00
 #SBATCH --partition=orchid
 #SBATCH --account=orchid

@@ -66,7 +66,7 @@ def objective(config):
     while not os.path.exists(results_path):
         time.sleep(15)
         counter += 1
-        if counter >= 300:
+        if counter >= 1000:
             raise RuntimeError(
                 "An error has occured. Refer to tune.py source."
             )

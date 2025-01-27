@@ -6,6 +6,4 @@
 # sbatch ./param_tune/tune_slurm.sh --algo trpo
 # sbatch ./param_tune/tune_slurm.sh --algo sac
 # sbatch ./param_tune/tune_slurm.sh --algo tqc
-# sbatch ./param_tune/tune_slurm.sh --algo avg
-
 sbatch ./param_tune/tune_slurm.sh --algo avg

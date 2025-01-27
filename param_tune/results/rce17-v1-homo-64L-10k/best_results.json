@@ -1,4 +1,12 @@
 {
+    "avg": {
+        "actor_adam_lr": 0.008521109613148892,
+        "critic_adam_lr": 0.004936933543524053,
+        "alpha_lr": 0.00022016687444459084,
+        "algo": "avg",
+        "date": "2025-01-21",
+        "episodic_return": -46358.328125
+    },
     "ddpg": {
         "learning_rate": 0.0024561859020519597,
         "tau": 0.07981709935299988,
@@ -58,6 +66,20 @@
         "algo": "td3",
         "date": "2024-12-11",
         "episodic_return": -43531.36328125
+    },
+    "tqc": {
+        "tau": 0.08943719741798728,
+        "batch_size": 128,
+        "n_quantiles": 10,
+        "n_critics": 30,
+        "actor_adam_lr": 0.006959864765818153,
+        "critic_adam_lr": 0.008446912323671903,
+        "alpha_adam_lr": 0.004467734257572652,
+        "policy_frequency": 1,
+        "target_network_frequency": 7,
+        "algo": "tqc",
+        "date": "2025-01-21",
+        "episodic_return": -43181.828125
     },
     "trpo": {
         "learning_rate": 0.006146659496934928,

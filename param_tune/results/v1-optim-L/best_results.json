@@ -1,4 +1,13 @@
 {
+    "avg": {
+        "actor_adam_lr": 0.00714879862142378,
+        "critic_adam_lr": 0.0014905700455431093,
+        "alpha_lr": 0.0039755680315871145,
+        "actor_critic_layer_size": 32,
+        "algo": "avg",
+        "date": "2025-01-22",
+        "episodic_return": -1.7811561822891235
+    },
     "ddpg": {
         "learning_rate": 0.002773043976438098,
         "tau": 0.09448348080762628,

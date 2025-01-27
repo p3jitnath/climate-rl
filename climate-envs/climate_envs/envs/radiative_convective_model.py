@@ -178,15 +178,15 @@ class RadiativeConvectiveModelEnv(gym.Env):
         params = self._get_params()
 
         Tprofile_RL = self._get_temp()
-        T_diff_RL = Tobs.sel(level=[100, 200]) - Tprofile_RL.sel(
-            level=[100, 200]
+        T_diff_RL = Tobs.sel(level=[100, 200, 1000]) - Tprofile_RL.sel(
+            level=[100, 200, 1000]
         )
         T_diff_RL = np.abs(T_diff_RL)
 
         Tprofile_climlab = self._get_temp(model="climlab")
-        T_diff_climlab = Tobs.sel(level=[100, 200]) - Tprofile_climlab.sel(
-            level=[100, 200]
-        )
+        T_diff_climlab = Tobs.sel(
+            level=[100, 200, 1000]
+        ) - Tprofile_climlab.sel(level=[100, 200, 1000])
         T_diff_climlab = np.abs(T_diff_climlab)
 
         # Left subplot: emissivity and adj_lapse_rate as bar plots
@@ -253,16 +253,20 @@ class RadiativeConvectiveModelEnv(gym.Env):
         # Right subplot: emissivity and adj_lapse_rate as bar plots
         ax3 = fig.add_subplot(gs[0, 2])
         ax3_bar_width = 0.4
-        ax3_labels = ["T_diff @ 100 hPa", "T_diff @ 200 hPa"]
+        ax3_labels = [
+            "T_diff @ 100 hPa",
+            "T_diff @ 200 hPa",
+            "T_diff @ 1000 hPa",
+        ]
         ax3_ind = np.arange(1, 1 + len(ax3_labels))
-        ax3_colors_RL = ["tab:blue", "tab:blue"]
+        ax3_colors_RL = ["tab:blue", "tab:blue", "tab:blue"]
         ax3_bars_RL = ax3.bar(
             ax3_ind - (ax3_bar_width / 2),
             T_diff_RL,
             color=ax3_colors_RL,
             width=ax3_bar_width,
         )
-        ax3_colors_climlab = ["tab:orange", "tab:orange"]
+        ax3_colors_climlab = ["tab:orange", "tab:orange", "tab:orange"]
         ax3_bars_climlab = ax3.bar(
             ax3_ind + (ax3_bar_width / 2),
             T_diff_climlab,

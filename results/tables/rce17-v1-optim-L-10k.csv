@@ -1,0 +1,10 @@
+algo,score,steps_to_threshold,mean_at_threshold,var_after_threshold,diff_from_10k@10k
+td3,0.8982048597440906,1000.0,-43427.41875,5316.469914365132,-394.65781250000146
+ddpg,,,,,
+dpg,,,,,
+ppo,,,,,
+reinforce,,,,,
+sac,,,,,
+trpo,,,,,
+tqc,,,,,
+avg,,,,,

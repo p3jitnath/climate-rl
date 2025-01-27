@@ -16,8 +16,6 @@ def orthogonal_weight_init(m):
 class Actor(nn.Module):
     def __init__(self, envs, layer_size):
         super(Actor, self).__init__()
-        self.LOG_STD_MAX = 2
-        self.LOG_STD_MIN = -20
 
         self.phi = nn.Sequential(
             nn.Linear(
@@ -34,6 +32,21 @@ class Actor(nn.Module):
         )
         self.log_std = nn.Linear(
             layer_size, np.prod(envs.single_action_space.shape)
+        )
+
+        self.register_buffer(
+            "action_scale",
+            torch.tensor(
+                (envs.action_space.high - envs.action_space.low) / 2.0,
+                dtype=torch.float32,
+            ),
+        )
+        self.register_buffer(
+            "action_bias",
+            torch.tensor(
+                (envs.action_space.high + envs.action_space.low) / 2.0,
+                dtype=torch.float32,
+            ),
         )
 
         self.apply(orthogonal_weight_init)
@@ -53,10 +66,11 @@ class Actor(nn.Module):
         lprob -= (
             2 * (np.log(2) - action_pre - F.softplus(-2 * action_pre))
         ).sum(axis=1)
+        lprob -= torch.log(self.action_scale).sum()
 
         # N.B: Tanh must be applied _only_ after lprob estimation of dist sampled action!!
         #      A mistake here can break learning :/
-        action = torch.tanh(action_pre)
+        action = torch.tanh(action_pre) * self.action_scale + self.action_bias
         action_info = {
             "mu": mu,
             "log_std": log_std,
