@@ -53,7 +53,7 @@ class Actor(nn.Module):
 
     def forward(self, x):
         phi = self.phi(x)
-        phi = phi / torch.norm(phi, dim=1).view((-1, 1))
+        phi = phi / (torch.norm(phi, dim=1).view((-1, 1)) + 1e-6)
         mu = self.mu(phi)
         log_std = self.log_std(phi)
         log_std = torch.clamp(log_std, LOG_STD_MIN, LOG_STD_MAX)

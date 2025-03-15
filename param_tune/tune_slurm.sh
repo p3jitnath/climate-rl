@@ -49,17 +49,17 @@ fi
 
 # __doc_head_address_start__
 
-# Checking the conda environment
+# checking the conda environment
 echo "PYTHON: $(which python)"
 
-# Getting the node names
+# getting the node names
 nodes=$(scontrol show hostnames "$SLURM_JOB_NODELIST")
 nodes_array=($nodes)
 
 head_node=${nodes_array[0]}
 head_node_ip=$(srun --nodes=1 --ntasks=1 -w "$head_node" hostname --ip-address)
 
-# If we detect a space character in the head node IP, we'll
+# if we detect a space character in the head node IP, we'll
 # convert it to an ipv4 address. This step is optional.
 if [[ "$head_node_ip" == *" "* ]]; then
 IFS=' ' read -ra ADDR <<<"$head_node_ip"

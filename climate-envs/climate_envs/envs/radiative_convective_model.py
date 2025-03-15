@@ -13,27 +13,28 @@ from gymnasium import spaces
 from matplotlib.gridspec import GridSpec
 from metpy.plots import SkewT
 
-BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
-DATASETS_DIR = f"{BASE_DIR}/datasets"
-fp = f"{DATASETS_DIR}/air.mon.ltm.1981-2010.nc"
 
-if not os.path.exists(fp):
-    print("Downloading NCEP air data ...")
-    ncep_url = (
-        "https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/Monthlies/"
-    )
-    ncep_air = xr.open_dataset(
-        ncep_url + "pressure/air.mon.1981-2010.ltm.nc#mode=bytes",
-        use_cftime=True,
-    )
-    ncep_air.to_netcdf(fp)
-else:
-    print("Loading NCEP air data ...")
-    ncep_air = xr.open_dataset(fp, use_cftime=True)
+class Utils:
 
-coslat = np.cos(np.deg2rad(ncep_air.lat))
-weight = coslat / coslat.mean(dim="lat")
-Tobs = (ncep_air.air * weight).mean(dim=("lat", "lon", "time"))
+    BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
+    DATASETS_DIR = f"{BASE_DIR}/datasets"
+    fp = f"{DATASETS_DIR}/air.mon.ltm.1981-2010.nc"
+
+    if not os.path.exists(fp):
+        print("Downloading NCEP air data ...")
+        ncep_url = "https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/Monthlies/"
+        ncep_air = xr.open_dataset(
+            ncep_url + "pressure/air.mon.1981-2010.ltm.nc#mode=bytes",
+            use_cftime=True,
+        )
+        ncep_air.to_netcdf(fp)
+    else:
+        print("Loading NCEP air data ...")
+        ncep_air = xr.open_dataset(fp, use_cftime=True)
+
+    coslat = np.cos(np.deg2rad(ncep_air.lat))
+    weight = coslat / coslat.mean(dim="lat")
+    Tobs = (ncep_air.air * weight).mean(dim=("lat", "lon", "time"))
 
 
 class RadiativeConvectiveModelEnv(gym.Env):
@@ -53,6 +54,8 @@ class RadiativeConvectiveModelEnv(gym.Env):
         self.min_temperature = -90
         self.max_temperature = 90
 
+        self.utils = Utils()
+
         self.action_space = spaces.Box(
             low=np.array(
                 [self.min_emissivity, self.min_adj_lapse_rate],
@@ -68,7 +71,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
         self.observation_space = spaces.Box(
             low=self.min_temperature,
             high=self.max_temperature,
-            shape=(len(Tobs.level),),
+            shape=(len(self.utils.Tobs.level),),
             dtype=np.float32,
         )
 
@@ -93,7 +96,9 @@ class RadiativeConvectiveModelEnv(gym.Env):
             rcm = self.climlab_rcm
         temp = np.concatenate([rcm.Tatm, rcm.Ts], dtype=np.float32)
         temp -= climlab.constants.tempCtoK
-        temp = xr.DataArray(temp, coords={"level": Tobs.level.values[::-1]})
+        temp = xr.DataArray(
+            temp, coords={"level": self.utils.Tobs.level.values[::-1]}
+        )
         return temp
 
     def _get_info(self):
@@ -127,7 +132,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
         self.climlab_rcm.step_forward()
 
         Tprofile = self._get_temp().values
-        costs = np.mean((Tprofile - Tobs.values[::-1]) ** 2)
+        costs = np.mean((Tprofile - self.utils.Tobs.values[::-1]) ** 2)
 
         self.state = self._get_state()
 
@@ -135,9 +140,11 @@ class RadiativeConvectiveModelEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        rce_state = climlab.column_state(lev=Tobs.level[1:], water_depth=2.5)
+        rce_state = climlab.column_state(
+            lev=self.utils.Tobs.level[1:], water_depth=2.5
+        )
         h2o = climlab.radiation.ManabeWaterVapor(
-            state=rce_state, lev=Tobs.level[1:]
+            state=rce_state, lev=self.utils.Tobs.level[1:]
         )
         rad = climlab.radiation.RRTMG(
             name="Radiation (net)",
@@ -178,13 +185,13 @@ class RadiativeConvectiveModelEnv(gym.Env):
         params = self._get_params()
 
         Tprofile_RL = self._get_temp()
-        T_diff_RL = Tobs.sel(level=[100, 200, 1000]) - Tprofile_RL.sel(
+        T_diff_RL = self.utils.Tobs.sel(
             level=[100, 200, 1000]
-        )
+        ) - Tprofile_RL.sel(level=[100, 200, 1000])
         T_diff_RL = np.abs(T_diff_RL)
 
         Tprofile_climlab = self._get_temp(model="climlab")
-        T_diff_climlab = Tobs.sel(
+        T_diff_climlab = self.utils.Tobs.sel(
             level=[100, 200, 1000]
         ) - Tprofile_climlab.sel(level=[100, 200, 1000])
         T_diff_climlab = np.abs(T_diff_climlab)
@@ -240,7 +247,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
                 color="tab:orange",
             )
             tpg.plot(
-                zip(Tobs.level, Tobs),
+                zip(self.utils.Tobs.level, self.utils.Tobs),
                 color="black",
                 linestyle="-",
                 linewidth=2,
@@ -311,8 +318,8 @@ class RadiativeConvectiveModelEnv(gym.Env):
 
     def _make_skewT(self, skew, title=None):
         skew.plot(
-            Tobs.level,
-            Tobs,
+            self.utils.Tobs.level,
+            self.utils.Tobs,
             color="black",
             linestyle="-",
             linewidth=2,
