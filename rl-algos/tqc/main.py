@@ -154,7 +154,7 @@ def make_env(env_id, seed, idx, capture_video, run_name, capture_video_freq):
             env = gym.make(env_id, render_mode="rgb_array")
             env = gym.wrappers.RecordVideo(
                 env,
-                f"videos/{run_name}",
+                f"{BASE_DIR}/videos/{run_name}",
                 episode_trigger=lambda x: (x == 0)
                 or (
                     x % capture_video_freq == (capture_video_freq - 1)
@@ -210,7 +210,7 @@ if args.track:
 if args.optimise:
     writer = NoOpSummaryWriter()
 else:
-    writer = SummaryWriter(f"runs/{run_name}")
+    writer = SummaryWriter(f"{BASE_DIR}/runs/{run_name}")
 
 writer.add_text(
     "hyperparameters",

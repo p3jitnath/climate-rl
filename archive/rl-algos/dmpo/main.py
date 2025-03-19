@@ -118,7 +118,7 @@ if args.track:
         save_code=True,
     )
 
-writer = SummaryWriter(f"runs/{run_name}")
+writer = SummaryWriter(f"/runs/{run_name}")
 writer.add_text(
     "hyperparameters",
     "|param|value|\n|-|-|\n%s"
