@@ -13,9 +13,9 @@ import numpy as np
 import torch
 import torch.optim as optim
 import tyro
-from sac_actor import Actor
 from stable_baselines3.common.buffers import ReplayBuffer
 from torch.utils.tensorboard import SummaryWriter
+from tqc_actor import Actor
 from tqc_quantile_critic import QuantileCritics
 
 BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
@@ -252,20 +252,20 @@ if args.use_paper_n_quantiles_to_drop:
     )
 
 actor = Actor(envs, args.actor_layer_size).to(device)
-critics = QuantileCritics(
+qcritic = QuantileCritics(
     envs, args.n_quantiles, args.n_critics, args.critic_layer_size
 ).to(device)
-args.n_top_quantiles_to_drop = args.n_quantiles_to_drop * critics.n_critics
+args.n_top_quantiles_to_drop = args.n_quantiles_to_drop * qcritic.n_critics
 actor_optimizer = torch.optim.Adam(actor.parameters(), lr=args.actor_adam_lr)
 critic_optimizer = torch.optim.Adam(
-    critics.parameters(), lr=args.critic_adam_lr
+    qcritic.parameters(), lr=args.critic_adam_lr
 )
 
-target_critics = QuantileCritics(
+target_qcritic = QuantileCritics(
     envs, args.n_quantiles, args.n_critics, args.critic_layer_size
 ).to(device)
-target_critics.load_state_dict(critics.state_dict())
-target_critics.requires_grad_(False)
+target_qcritic.load_state_dict(qcritic.state_dict())
+target_qcritic.requires_grad_(False)
 
 if args.autotune:
     target_entropy = -torch.prod(
@@ -335,17 +335,17 @@ for global_step in range(1, args.total_timesteps + 1):
             next_state_actions, next_state_log_pi, _ = actor.get_action(
                 data.next_observations
             )
-            next_z = target_critics(data.next_observations, next_state_actions)
+            next_z = target_qcritic(data.next_observations, next_state_actions)
             sorted_z, _ = torch.sort(next_z.reshape(batch_size, -1))
             sorted_z = sorted_z[
-                :, : critics.n_total_quantiles - args.n_top_quantiles_to_drop
+                :, : qcritic.n_total_quantiles - args.n_top_quantiles_to_drop
             ]
             target_z = data.rewards + (1 - data.dones) * args.gamma * (
                 sorted_z - alpha * next_state_log_pi
             )
 
-        # 5b. update both the critics
-        cur_z = critics(data.observations, data.actions)
+        # 5b. update both the qcritic
+        cur_z = qcritic(data.observations, data.actions)
         critic_loss = quantile_huber_loss(cur_z, target_z)
         critic_optimizer.zero_grad()
         critic_loss.backward()
@@ -361,7 +361,7 @@ for global_step in range(1, args.total_timesteps + 1):
                 )
                 actor_loss = (
                     alpha * log_pi
-                    - critics(data.observations, sampled_actions)
+                    - qcritic(data.observations, sampled_actions)
                     .mean(2)
                     .mean(1, keepdim=True)
                 ).mean()
@@ -384,7 +384,7 @@ for global_step in range(1, args.total_timesteps + 1):
         # 5e. soft-update the target networks
         if global_step % args.target_network_frequency == 0:
             for param, target_param in zip(
-                critics.parameters(), target_critics.parameters()
+                qcritic.parameters(), target_qcritic.parameters()
             ):
                 target_param.data.copy_(
                     args.tau * param.data + (1 - args.tau) * target_param.data

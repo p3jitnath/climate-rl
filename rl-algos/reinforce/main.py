@@ -163,7 +163,6 @@ device = torch.device(
 )
 print(f"device: {device}")
 print(f"actor layer size: {args.actor_layer_size}")
-# print(f"critic layer size: {args.critic_layer_size}")
 
 # 0. env setup
 envs = gym.vector.SyncVectorEnv(
