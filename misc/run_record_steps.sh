@@ -48,10 +48,10 @@ ALGOS=("dpg")
 
 # 4. Get the current date and time in YYYY-MM-DD_HH-MM format
 NOW=$(date +%F_%H-%M)
+ WANDB_GROUP="${TAG}_${NOW}"
 
 # 5. Loop through each algorithm and execute the script
 for ALGO in "${ALGOS[@]}"; do
-    WANDB_GROUP="${TAG}_${NOW}"
     # Submit each algorithm run as a separate Slurm job
     sbatch <<EOT
 #!/bin/bash

@@ -49,10 +49,10 @@ ALGOS=("tqc")
 
 # 4. Get the current date and time in YYYY-MM-DD_HH-MM format
 NOW=$(date +%F_%H-%M)
+WANDB_GROUP="x9_${TAG}_${NOW}"
 
 # 5. Loop through each algorithm and execute the script for multiple seeds
 for ALGO in "${ALGOS[@]}"; do
-    WANDB_GROUP="x9_${TAG}_${NOW}"
     for SEED in {2..10}; do
         # Submit each algorithm run as a separate Slurm job
         sbatch <<EOT

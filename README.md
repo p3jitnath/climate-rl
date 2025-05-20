@@ -63,15 +63,15 @@ To set up the project environment, follow these steps:
      conda activate venv
      ```
 
-3. Install the climate RL environments:
-    ```
-    cd climate-envs/ && pip install . && cd ../
-    ```
-
-4. Replace the `BASE_DIR` location and the conda environment name:
+3. Replace the `BASE_DIR` location and the conda environment name:
    ```
    find . -type f -exec sed -i "s|/gws/nopw/j04/ai4er/users/pn341/climate-rl|$(pwd)|g" {} +
    ```
+
+4. Install the climate RL environments:
+    ```
+    cd climate-envs/ && pip install . && cd ../
+    ```
 
 5. [Optional] Download runs:
     ```bash
