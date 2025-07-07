@@ -64,11 +64,11 @@ for ALGO in "${ALGOS[@]}"; do
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=2
-#SBATCH --gres=gpu:1
 #SBATCH --mem-per-cpu=8G
-#SBATCH --time=24:00:00
-#SBATCH --partition=orchid
-#SBATCH --account=orchid
+#SBATCH --time=01:00:00
+#SBATCH --account=ai4er
+#SBATCH --partition=debug
+#SBATCH --qos=debug
 
 conda activate venv
 cd "$BASE_DIR"
