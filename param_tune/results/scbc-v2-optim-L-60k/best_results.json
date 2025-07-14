@@ -1,0 +1,103 @@
+{
+    "avg": {
+        "actor_adam_lr": 0.00014754983923176987,
+        "critic_adam_lr": 0.001365254475752403,
+        "alpha_lr": 0.0019818062216074546,
+        "actor_critic_layer_size": 256,
+        "algo": "avg",
+        "date": "2025-07-07",
+        "episodic_return": -160.05914306640625
+    },
+    "ddpg": {
+        "learning_rate": 0.006819620595236977,
+        "tau": 0.03862735729005504,
+        "batch_size": 128,
+        "exploration_noise": 0.12476231960212905,
+        "policy_frequency": 10,
+        "noise_clip": 0.9,
+        "actor_critic_layer_size": 256,
+        "algo": "ddpg",
+        "date": "2025-07-07",
+        "episodic_return": -160.71730041503906
+    },
+    "dpg": {
+        "learning_rate": 0.0011255876981883552,
+        "exploration_noise": 0.1055283269361358,
+        "policy_frequency": 1,
+        "actor_critic_layer_size": 256,
+        "algo": "dpg",
+        "date": "2025-07-07",
+        "episodic_return": -160.35928344726562
+    },
+    "ppo": {
+        "learning_rate": 0.004476128763529839,
+        "num_minibatches": 10,
+        "update_epochs": 7,
+        "clip_coef": 0.1296537080571013,
+        "max_grad_norm": 0.5,
+        "actor_critic_layer_size": 32,
+        "algo": "ppo",
+        "date": "2025-07-07",
+        "episodic_return": -160.0435791015625
+    },
+    "reinforce": {
+        "learning_rate": 0.0020078805142308633,
+        "actor_critic_layer_size": 128,
+        "algo": "reinforce",
+        "date": "2025-07-07",
+        "episodic_return": -175.79849243164062
+    },
+    "sac": {
+        "tau": 0.016930773137370424,
+        "batch_size": 64,
+        "policy_lr": 0.00012024535295982104,
+        "q_lr": 0.0038653307553883137,
+        "policy_frequency": 2,
+        "target_network_frequency": 10,
+        "noise_clip": 0.30000000000000004,
+        "alpha": 0.4,
+        "actor_critic_layer_size": 256,
+        "algo": "sac",
+        "date": "2025-07-07",
+        "episodic_return": -160.4617156982422
+    },
+    "td3": {
+        "learning_rate": 0.0024029360095562226,
+        "tau": 0.004875906237480049,
+        "batch_size": 128,
+        "policy_noise": 0.17048827451942572,
+        "exploration_noise": 0.1000848855167979,
+        "policy_frequency": 1,
+        "noise_clip": 0.5,
+        "actor_critic_layer_size": 256,
+        "algo": "td3",
+        "date": "2025-07-07",
+        "episodic_return": -160.31771850585938
+    },
+    "tqc": {
+        "tau": 0.03061638326241157,
+        "batch_size": 64,
+        "n_quantiles": 10,
+        "n_critics": 5,
+        "actor_adam_lr": 0.002123002421779978,
+        "critic_adam_lr": 0.00175643413655547,
+        "alpha_adam_lr": 0.00013381801360726978,
+        "policy_frequency": 2,
+        "target_network_frequency": 3,
+        "actor_critic_layer_size": 256,
+        "algo": "tqc",
+        "date": "2025-07-09",
+        "episodic_return": -160.3215789794922
+    },
+    "trpo": {
+        "learning_rate": 0.004698830461337318,
+        "num_minibatches": 10,
+        "update_epochs": 9,
+        "clip_coef": 0.14140495810569903,
+        "max_grad_norm": 0.8,
+        "actor_critic_layer_size": 32,
+        "algo": "trpo",
+        "date": "2025-07-07",
+        "episodic_return": -160.73086547851562
+    }
+}

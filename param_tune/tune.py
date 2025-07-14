@@ -66,7 +66,7 @@ def objective(config):
     while not os.path.exists(results_path):
         time.sleep(15)
         counter += 1
-        if counter >= 1000:
+        if counter >= 3 * 60 * (60 / 15):
             raise RuntimeError(
                 "An error has occured. Refer to tune.py source."
             )
@@ -94,7 +94,9 @@ except Exception:
 
 ray.init(**ray_kwargs)
 
-trainable = tune.with_resources(objective, resources={"cpu": 1, "gpu": 0.25})
+trainable = tune.with_resources(
+    objective, resources={"cpu": 1, "gpu": 0}
+)  # resources={"cpu": 1, "gpu": 0.25})
 
 RESULTS_DIR = f"{BASE_DIR}/param_tune/results/{args.exp_id}"
 if not os.path.exists(RESULTS_DIR):
@@ -119,13 +121,15 @@ else:
             max_concurrent_trials=32,
         ),
         param_space={
-            "scaling_config": train.ScalingConfig(use_gpu=True),
+            "scaling_config": train.ScalingConfig(
+                use_gpu=False
+            ),  # use_gpu=True
             "params": search_space,
         },
         run_config=train.RunConfig(
             storage_path=storage_path,
             name=f"pn341_ray_slurm_{args.exp_id}_{args.algo}",
-            stop={"time_total_s": 2 * 60 * 60},
+            stop={"time_total_s": 24 * 60 * 60},
         ),
     )
 results = tuner.fit()

@@ -1,0 +1,94 @@
+{
+    "avg": {
+        "actor_adam_lr": 0.00166586332646985,
+        "critic_adam_lr": 0.0021249372971195325,
+        "alpha_lr": 0.00013967131267052224,
+        "algo": "avg",
+        "date": "2025-07-07",
+        "episodic_return": -0.011838222853839397
+    },
+    "ddpg": {
+        "learning_rate": 0.004836993262970307,
+        "tau": 0.07209100563240435,
+        "batch_size": 128,
+        "exploration_noise": 0.10048647796653422,
+        "policy_frequency": 7,
+        "noise_clip": 0.2,
+        "algo": "ddpg",
+        "date": "2025-07-06",
+        "episodic_return": -2.099008798599243
+    },
+    "dpg": {
+        "learning_rate": 0.0015319490283796997,
+        "exploration_noise": 0.1003494512930038,
+        "policy_frequency": 9,
+        "algo": "dpg",
+        "date": "2025-07-06",
+        "episodic_return": -2.1019017696380615
+    },
+    "ppo": {
+        "learning_rate": 0.0009159838881562544,
+        "num_minibatches": 50,
+        "update_epochs": 8,
+        "clip_coef": 0.1403256159902233,
+        "max_grad_norm": 0.8,
+        "algo": "ppo",
+        "date": "2025-07-06",
+        "episodic_return": -0.0009942986071109772
+    },
+    "reinforce": {
+        "learning_rate": 0.009157161076310564,
+        "algo": "reinforce",
+        "date": "2025-07-07",
+        "episodic_return": -64.54004669189453
+    },
+    "sac": {
+        "tau": 0.08142889724935148,
+        "batch_size": 64,
+        "policy_lr": 0.0002017658157834135,
+        "q_lr": 0.004596695281966693,
+        "policy_frequency": 2,
+        "target_network_frequency": 10,
+        "noise_clip": 0.30000000000000004,
+        "alpha": 0.2,
+        "algo": "sac",
+        "date": "2025-07-06",
+        "episodic_return": -2.6837618350982666
+    },
+    "td3": {
+        "learning_rate": 0.0027601863557896,
+        "tau": 0.04471510069163445,
+        "batch_size": 64,
+        "policy_noise": 0.17631877629365922,
+        "exploration_noise": 0.10106468966165788,
+        "policy_frequency": 1,
+        "noise_clip": 0.6000000000000001,
+        "algo": "td3",
+        "date": "2025-07-06",
+        "episodic_return": -2.0585734844207764
+    },
+    "tqc": {
+        "tau": 0.09796795233940638,
+        "batch_size": 128,
+        "n_quantiles": 15,
+        "n_critics": 25,
+        "actor_adam_lr": 0.002799600084290737,
+        "critic_adam_lr": 0.009085881473296926,
+        "alpha_adam_lr": 0.009601730384859657,
+        "policy_frequency": 8,
+        "target_network_frequency": 6,
+        "algo": "tqc",
+        "date": "2025-07-09",
+        "episodic_return": -1.4345260858535767
+    },
+    "trpo": {
+        "learning_rate": 0.00843428949858031,
+        "num_minibatches": 20,
+        "update_epochs": 5,
+        "clip_coef": 0.23037048377225955,
+        "max_grad_norm": 0.9,
+        "algo": "trpo",
+        "date": "2025-07-06",
+        "episodic_return": -0.003152059856802225
+    }
+}
