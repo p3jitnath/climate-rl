@@ -22,11 +22,12 @@ for run in "${runs[@]}"; do
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=2
 #SBATCH --time=01:00:00
-#SBATCH --partition=orchid
-#SBATCH --account=orchid
+#SBATCH --account=ai4er
+#SBATCH --partition=standard
+#SBATCH --qos=high
 
 conda activate venv
-python $BASE_DIR/misc/rcem_generate_results.py --exp_id $exp_id
+python $BASE_DIR/misc/rce_generate_results.py --exp_id $exp_id
 EOT
 done
 

@@ -4,7 +4,7 @@
 BASE_DIR="/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 
 # Array of runs
-runs=("$BASE_DIR"/param_tune/results/v*)
+runs=("$BASE_DIR"/param_tune/results/scbc*)
 
 # Loop through each run
 for run in "${runs[@]}"; do
@@ -22,8 +22,9 @@ for run in "${runs[@]}"; do
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=2
 #SBATCH --time=01:00:00
-#SBATCH --partition=orchid
-#SBATCH --account=orchid
+#SBATCH --account=ai4er
+#SBATCH --partition=standard
+#SBATCH --qos=high
 
 conda activate venv
 python $BASE_DIR/misc/scbc_generate_results.py --exp_id $exp_id

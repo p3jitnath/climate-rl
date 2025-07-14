@@ -24,7 +24,7 @@ RUNS_DIR = f"{BASE_DIR}/runs"
 TABLES_DIR = f"{BASE_DIR}/results/tables/"
 IMGS_DIR = f"{BASE_DIR}/results/imgs/"
 
-THRESHOLDS = {"rce-v0": 4.39e4, "rce17-v0": 4.37e4, "rce17-v1": 4.36e4}
+THRESHOLDS = {"rce-v0": 4.39e4, "rce17-v0": 4.37e4, "rce17-v1": 4.365e4}
 
 
 @dataclass
@@ -46,6 +46,7 @@ def extract_version(text):
 
 THRESHOLD = THRESHOLDS[extract_version(EXP_ID)]
 THRESHOLD += 0.005e4 if "homo" in EXP_ID else 0
+THRESHOLD_EPISODE = 10
 
 EPISODE_COUNT = 10000 // 500
 N_EXPERIMENTS = 10
@@ -150,18 +151,13 @@ def calculate_score(data, threshold, alpha=0.9, beta=0.05, gamma=0.05):
             diff_from_10k = -1 * (
                 data_v2_10k[algo]["means"][-1] - mean_at_threshold
             )
-            score = alpha * (1 / ((episodes_to_threshold * 1e-3) + 1))
-            score += beta * (1 / ((var_after_threshold * 1e6) + 1e-6))
-            score += gamma * (1 / (np.abs(diff_from_10k * 1e2) + 1e-6))
         else:
             var_after_threshold = np.NaN
             mean_at_threshold = np.NaN
             diff_from_10k = np.NaN
-            score = np.NaN
         scores.append(
             {
                 "algo": algo,
-                "score": score,
                 "steps_to_threshold": (
                     500 * episodes_to_threshold
                     if episodes_to_threshold is not None
@@ -178,8 +174,26 @@ def calculate_score(data, threshold, alpha=0.9, beta=0.05, gamma=0.05):
 import pandas as pd
 
 df = pd.DataFrame(calculate_score(data_v2, threshold=THRESHOLD))
-df = df.sort_values(["score"], ascending=False)
 df = df.set_index("algo")
+
+df["abs_diff_from_10k@10k"] = df["diff_from_10k@10k"].abs()
+
+rank_metrics = [
+    "steps_to_threshold",
+    "var_after_threshold",
+    "abs_diff_from_10k@10k",
+]
+ranked = df[rank_metrics].rank(ascending=True, na_option="bottom")
+
+penalty = 10  # Fixed penalty added to the rank
+mask = df["var_after_threshold"] > 3e5
+ranked.loc[mask, "var_after_threshold"] += penalty
+mask = df["steps_to_threshold"] > THRESHOLD_EPISODE * 500
+ranked.loc[mask, "var_after_threshold"] += penalty
+
+df["final_score"] = ranked.sum(axis=1)
+df.loc[df[rank_metrics].isnull().any(axis=1), "final_score"] = float("nan")
+df = df.sort_values("final_score")
 
 # df
 
