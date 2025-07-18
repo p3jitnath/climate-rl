@@ -174,18 +174,20 @@ cython_debug/
 *.png
 *.tmp
 
+records/
 runs/
 videos/
 steps/
 *.out
 wandb/
 slurm/
+*tmp/
 
 *_run_*
 *test*
-*-06072025
+*072025
+*.pth
 
-tmp/
 
 # Exceptions
 !datasets/*.pkl

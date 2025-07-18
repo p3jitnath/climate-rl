@@ -71,6 +71,10 @@ for ALGO in "${ALGOS[@]}"; do
 #SBATCH --partition=standard
 #SBATCH --qos=high
 
+## SBATCH --account=ai4er
+## SBATCH --partition=standard
+## SBATCH --qos=high
+
 ## SBATCH --account=orchid
 ## SBATCH --partition=orchid
 ## SBATCH --qos=orchid

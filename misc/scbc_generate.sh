@@ -9,7 +9,7 @@ runs=("$BASE_DIR"/param_tune/results/scbc*)
 # Loop through each run
 for run in "${runs[@]}"; do
     exp_id=$(basename "$run")
-    echo "Preparing to run $run ..."
+    echo "Preparing to run $exp_id ..."
 
     # Submit the job to SLURM
     sbatch <<EOT

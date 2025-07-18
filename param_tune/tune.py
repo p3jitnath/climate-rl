@@ -23,7 +23,7 @@ from param_tune.config import config
 class Args:
     algo: str = "ddpg"
     """name of rl-algo"""
-    exp_id: str = "v0-optim-L-60k"
+    exp_id: str = "scbc-v0-optim-L-60k"
     """name of the experiment"""
     env_id: str = "SimpleClimateBiasCorrection-v0"
     """name of the environment"""

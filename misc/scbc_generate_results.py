@@ -215,7 +215,7 @@ def format_func(value, tick_number=None):
 
 plt.rcParams.update({"font.size": 12})
 
-selected_algos = df.index.values[:TOP_K]
+selected_algos = df.dropna().index.values[:TOP_K]
 
 fig, ax = plt.subplots(figsize=(6.4, 4.8))
 

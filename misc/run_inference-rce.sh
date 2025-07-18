@@ -44,11 +44,14 @@ fi
 BASE_DIR="/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 
 # 3. List of algorithms
-ALGOS=("dpg")
+ALGOS=("ddpg" "dpg" "td3" "reinforce" "trpo" "ppo" "sac" "avg")
+# ALGOS=("tqc")
 
 # 4. Get the current date and time in YYYY-MM-DD_HH-MM format
 NOW=$(date +%F_%H-%M)
- WANDB_GROUP="${TAG}_${NOW}"
+# NOW=$(basename $(find ${BASE_DIR}/runs/ -maxdepth 1 -type d -name "infx10_${TAG}_*" | grep -E "${TAG}_[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}$" | sort -r | head -n 1) | sed -E "s/^infx10_${TAG}_//")
+WANDB_GROUP="infx10_${TAG}_${NOW}"
+echo $WANDB_GROUP
 
 # 5. Loop through each algorithm and execute the script
 for ALGO in "${ALGOS[@]}"; do
@@ -57,16 +60,21 @@ for ALGO in "${ALGOS[@]}"; do
 #!/bin/bash
 
 #SBATCH --job-name=pn341_${ALGO}_${TAG}
-#SBATCH --output=$BASE_DIR/slurm/${ALGO}_${TAG}_%j.out
-#SBATCH --error=$BASE_DIR/slurm/${ALGO}_${TAG}_%j.err
+#SBATCH --output=$BASE_DIR/slurm/infx10_${ALGO}_${TAG}_%a_%A.out
+#SBATCH --error=$BASE_DIR/slurm/infx10_${ALGO}_${TAG}_%a_%A.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=2
 #SBATCH --mem-per-cpu=8G
-#SBATCH --time=01:00:00
+#SBATCH --time=03:00:00
+#SBATCH --array=1-10
 #SBATCH --account=ai4er
 #SBATCH --partition=standard
 #SBATCH --qos=high
+
+## SBATCH --account=ai4er
+## SBATCH --partition=standard
+## SBATCH --qos=high
 
 ## SBATCH --account=orchid
 ## SBATCH --partition=orchid
@@ -76,7 +84,7 @@ for ALGO in "${ALGOS[@]}"; do
 conda activate venv
 cd "$BASE_DIR"
 export WANDB_MODE=offline
-python -u "$BASE_DIR/rl-algos/$ALGO/main.py" --env_id "$ENV_ID" --optim_group "$TAG" --wandb_group "$WANDB_GROUP" --total_timesteps 10000 --num_steps 500 --capture_video_freq 10 --no-track --record_steps
+python -u "$BASE_DIR/rl-algos/inference.py" --env_id "$ENV_ID" --algo $ALGO --optim_group "$TAG" --wandb_group "$WANDB_GROUP" --seed \${SLURM_ARRAY_TASK_ID} --num_steps 500 --record_step 10000
 EOT
-    sleep 60
+    # sleep 60
 done
