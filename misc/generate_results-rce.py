@@ -47,8 +47,9 @@ def extract_version(text):
 THRESHOLD = THRESHOLDS[extract_version(EXP_ID)]
 THRESHOLD += 0.005e4 if "homo" in EXP_ID else 0
 THRESHOLD_EPISODE = 10
+NUM_STEPS = 500
 
-EPISODE_COUNT = 10000 // 500
+EPISODE_COUNT = 10000 // NUM_STEPS
 N_EXPERIMENTS = 10
 TOP_K = 3
 
@@ -129,7 +130,7 @@ for algo in algos:
     data_v2_10k[algo] = {"means": means_10k, "std_devs": std_devs_10k}
 
 
-def calculate_score(data, threshold, alpha=0.9, beta=0.05, gamma=0.05):
+def calculate_score(data, threshold):
     scores = []
     # best_algo = min(
     #     data_v2_10k.keys(), key=lambda algo: data_v2_10k[algo]["means"][-1]
@@ -159,7 +160,7 @@ def calculate_score(data, threshold, alpha=0.9, beta=0.05, gamma=0.05):
             {
                 "algo": algo,
                 "steps_to_threshold": (
-                    500 * episodes_to_threshold
+                    NUM_STEPS * episodes_to_threshold
                     if episodes_to_threshold is not None
                     else np.NaN
                 ),
@@ -188,7 +189,7 @@ ranked = df[rank_metrics].rank(ascending=True, na_option="bottom")
 penalty = 10  # Fixed penalty added to the rank
 mask = df["var_after_threshold"] > 3e5
 ranked.loc[mask, "var_after_threshold"] += penalty
-mask = df["steps_to_threshold"] > THRESHOLD_EPISODE * 500
+mask = df["steps_to_threshold"] > THRESHOLD_EPISODE * NUM_STEPS
 ranked.loc[mask, "var_after_threshold"] += penalty
 
 df["final_score"] = ranked.sum(axis=1)
@@ -217,7 +218,7 @@ fig, ax = plt.subplots(figsize=(6.4, 4.8))
 
 for idx, algo in enumerate(selected_algos):
     episodes, _, means, std_devs = retrieve_plot_data(data, algo)
-    global_steps = [500 * x for x in episodes]
+    global_steps = [NUM_STEPS * x for x in episodes]
     (line,) = plt.plot(global_steps, means, label=f"{idx+1}. {algo.upper()}")
     plt.fill_between(
         global_steps,

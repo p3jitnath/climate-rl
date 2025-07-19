@@ -4,7 +4,7 @@
 BASE_DIR="/gws/nopw/j04/ai4er/users/pn341/climate-rl"
 
 # Array of runs
-runs=("$BASE_DIR"/param_tune/results/rce*)
+runs=("$BASE_DIR"/param_tune/results/scbc*)
 
 # Loop through each run
 for run in "${runs[@]}"; do
@@ -27,7 +27,7 @@ for run in "${runs[@]}"; do
 #SBATCH --qos=high
 
 conda activate venv
-python $BASE_DIR/misc/rce_generate_results.py --exp_id $exp_id
+python $BASE_DIR/misc/generate_results-scbc.py --exp_id $exp_id
 EOT
 done
 
