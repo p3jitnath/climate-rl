@@ -36,6 +36,7 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
     def __init__(self, render_mode=None):
         self.min_temperature = 0.0
         self.max_temperature = 1.0
+        self.min_heating_rate = -1.0
         self.max_heating_rate = 1.0
         self.dt = 1.0  # Time step (minutes)
         self.count = 0.0
@@ -45,7 +46,7 @@ class SimpleClimateBiasCorrectionEnv(gym.Env):
 
         # Define action and observation spaces
         self.action_space = spaces.Box(
-            low=-self.max_heating_rate,
+            low=self.min_heating_rate,
             high=self.max_heating_rate,
             shape=(1,),
             dtype=np.float32,
