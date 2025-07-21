@@ -8,9 +8,14 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu=8G
 #SBATCH --time=24:00:00
-#SBATCH --account=ai4er
-#SBATCH --partition=standard
-#SBATCH --qos=high
+#SBATCH --account=orchid
+#SBATCH --partition=orchid
+#SBATCH --qos=orchid
+#SBATCH --gres=gpu:2
+
+## SBATCH --account=ai4er
+## SBATCH --partition=standard
+## SBATCH --qos=high
 
 ## SBATCH --account=orchid
 ## SBATCH --partition=orchid
@@ -121,7 +126,7 @@ echo "Starting HEAD at $head_node"
 srun --nodes=1 --ntasks=1 -w "$head_node" \
     ray start --head --node-ip-address="$head_node_ip" --port=$port \
     --min-worker-port=$min_port --max-worker-port=$max_port \
-    --num-cpus="${SLURM_CPUS_PER_TASK}" --include-dashboard=False --num-gpus=0 --block & # --num-gpus=2
+    --num-cpus="${SLURM_CPUS_PER_TASK}" --include-dashboard=False --num-gpus=2 --block & # --num-gpus=2
 
 # optional, though may be useful in certain versions of Ray < 1.0.
 sleep 30
@@ -135,7 +140,7 @@ for ((i = 1; i <= worker_num; i++)); do
     srun --nodes=1 --ntasks=1 -w "$node_i" \
         ray start --address="$ip_head" \
         --min-worker-port=$min_port --max-worker-port=$max_port \
-        --num-cpus="${SLURM_CPUS_PER_TASK}" --num-gpus=0 --block & # --num-gpus=2
+        --num-cpus="${SLURM_CPUS_PER_TASK}" --num-gpus=2 --block & # --num-gpus=2
     sleep 30
 done
 

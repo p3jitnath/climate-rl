@@ -95,7 +95,7 @@ except Exception:
 ray.init(**ray_kwargs)
 
 trainable = tune.with_resources(
-    objective, resources={"cpu": 1, "gpu": 0}
+    objective, resources={"cpu": 1, "gpu": 0.25}
 )  # resources={"cpu": 1, "gpu": 0.25})
 
 RESULTS_DIR = f"{BASE_DIR}/param_tune/results/{args.exp_id}"
@@ -122,7 +122,7 @@ else:
         ),
         param_space={
             "scaling_config": train.ScalingConfig(
-                use_gpu=False
+                use_gpu=True
             ),  # use_gpu=True
             "params": search_space,
         },

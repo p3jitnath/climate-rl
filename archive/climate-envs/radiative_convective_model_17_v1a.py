@@ -13,28 +13,27 @@ from gymnasium import spaces
 from matplotlib.gridspec import GridSpec
 from metpy.plots import SkewT
 
+BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
+DATASETS_DIR = f"{BASE_DIR}/datasets"
+fp = f"{DATASETS_DIR}/air.mon.ltm.1981-2010.nc"
 
-class Utils:
+if not os.path.exists(fp):
+    print("Downloading NCEP air data ...")
+    ncep_url = (
+        "https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/Monthlies/"
+    )
+    ncep_air = xr.open_dataset(
+        ncep_url + "pressure/air.mon.1981-2010.ltm.nc#mode=bytes",
+        use_cftime=True,
+    )
+    ncep_air.to_netcdf(fp)
+else:
+    print("Loading NCEP air data ...")
+    ncep_air = xr.open_dataset(fp, use_cftime=True)
 
-    BASE_DIR = "/gws/nopw/j04/ai4er/users/pn341/climate-rl"
-    DATASETS_DIR = f"{BASE_DIR}/datasets"
-    fp = f"{DATASETS_DIR}/air.mon.ltm.1981-2010.nc"
-
-    if not os.path.exists(fp):
-        print("Downloading NCEP air data ...")
-        ncep_url = "https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis/Monthlies/"
-        ncep_air = xr.open_dataset(
-            ncep_url + "pressure/air.mon.1981-2010.ltm.nc#mode=bytes",
-            use_cftime=True,
-        )
-        ncep_air.to_netcdf(fp)
-    else:
-        print("Loading NCEP air data ...")
-        ncep_air = xr.open_dataset(fp, use_cftime=True)
-
-    coslat = np.cos(np.deg2rad(ncep_air.lat))
-    weight = coslat / coslat.mean(dim="lat")
-    Tobs = (ncep_air.air * weight).mean(dim=("lat", "lon", "time"))
+coslat = np.cos(np.deg2rad(ncep_air.lat))
+weight = coslat / coslat.mean(dim="lat")
+Tobs = (ncep_air.air * weight).mean(dim=("lat", "lon", "time"))
 
 
 class RadiativeConvectiveModelEnv(gym.Env):
@@ -45,45 +44,51 @@ class RadiativeConvectiveModelEnv(gym.Env):
     }
 
     def __init__(self, render_mode=None, locale="uk"):
-        # self.min_emissivity = 0  # perfect reflector
-        # self.max_emissivity = 1  # black body
+        self.min_emissivity = 0  # perfect reflector
+        self.max_emissivity = 1  # black body
 
-        self.min_adj_lapse_rate = 4
+        self.min_adj_lapse_rate = 5.5
         self.max_adj_lapse_rate = 9.8  # dry adiabatic lapse rate
 
         self.min_temperature = -90
         self.max_temperature = 90
 
-        self.utils = Utils()
+        self.min_specific_humidity = 0
+        self.max_specific_humidity = 5
+
+        self.min_temperature = -90
+        self.max_temperature = 90
 
         self.action_space = spaces.Box(
             low=np.array(
                 [
-                    # self.min_emissivity,
+                    self.min_emissivity,
+                    *[self.min_adj_lapse_rate for x in range(len(Tobs.level))],
                     *[
-                        self.min_adj_lapse_rate
-                        for x in range(len(self.utils.Tobs.level))
+                        self.min_specific_humidity
+                        for x in range(len(Tobs.level) - 1)
                     ],
                 ],
                 dtype=np.float32,
             ),
             high=np.array(
                 [
-                    # self.max_emissivity,
+                    self.max_emissivity,
+                    *[self.max_adj_lapse_rate for x in range(len(Tobs.level))],
                     *[
-                        self.max_adj_lapse_rate
-                        for x in range(len(self.utils.Tobs.level))
+                        self.max_specific_humidity
+                        for x in range(len(Tobs.level) - 1)
                     ],
                 ],
                 dtype=np.float32,
             ),
-            shape=(len(self.utils.Tobs.level),),
+            shape=(1 + len(Tobs.level) + len(Tobs.level) - 1,),
             dtype=np.float32,
         )
         self.observation_space = spaces.Box(
             low=self.min_temperature,
             high=self.max_temperature,
-            shape=(len(self.utils.Tobs.level),),
+            shape=(len(Tobs.level),),
             dtype=np.float32,
         )
 
@@ -108,18 +113,19 @@ class RadiativeConvectiveModelEnv(gym.Env):
             rcm = self.climlab_rcm
         temp = np.concatenate([rcm.Tatm, rcm.Ts], dtype=np.float32)
         temp -= climlab.constants.tempCtoK
-        temp = xr.DataArray(
-            temp, coords={"level": self.utils.Tobs.level.values[::-1]}
-        )
+        temp = xr.DataArray(temp, coords={"level": Tobs.level.values[::-1]})
         return temp
 
     def _get_info(self):
         return {"_": None}
 
     def _get_params(self):
-        # emissivity = self.rcm.subprocess["Radiation (net)"].emissivity
+        emissivity = self.rcm.subprocess["Radiation (net)"].emissivity
         adj_lapse_rate = self.rcm.subprocess["Convection"].adj_lapse_rate
-        params = np.array(adj_lapse_rate, dtype=np.float32)
+        specific_humidity = self.rcm.subprocess["Water Vapour"].q
+        params = np.array(
+            [emissivity, *adj_lapse_rate, *specific_humidity], dtype=np.float32
+        )
         return params
 
     def _get_state(self):
@@ -127,24 +133,38 @@ class RadiativeConvectiveModelEnv(gym.Env):
         return state
 
     def step(self, action):
-        adj_lapse_rate = action
+        emissivity, adj_lapse_rate, specific_humidity = (
+            action[0],
+            action[1 : 1 + len(Tobs.level)],
+            action[1 + len(Tobs.level) :],
+        )
+        specific_humidity /= 1e3
 
-        # emissivity = np.clip(
-        #     emissivity, self.min_emissivity, self.max_emissivity
-        # )
+        emissivity = np.clip(
+            emissivity, self.min_emissivity, self.max_emissivity
+        )
         adj_lapse_rate = np.clip(
             adj_lapse_rate, self.min_adj_lapse_rate, self.max_adj_lapse_rate
         )
+        specific_humidity = np.clip(
+            specific_humidity,
+            self.min_specific_humidity,
+            self.max_specific_humidity,
+        )
+
         # adj_lapse_rate = (self.max_adj_lapse_rate - self.min_adj_lapse_rate) * scipy.special.expit(adj_lapse_rate)
         # adj_lapse_rate += self.min_adj_lapse_rate
 
-        # self.rcm.subprocess["Radiation (net)"].emissivity = emissivity
+        self.rcm.subprocess["Radiation (net)"].emissivity = emissivity
         self.rcm.subprocess["Convection"].adj_lapse_rate = adj_lapse_rate
+        self.rcm.subprocess["Water Vapour"].q = specific_humidity
         self.rcm.step_forward()
         self.climlab_rcm.step_forward()
 
         Tprofile = self._get_temp().values
-        costs = np.mean((Tprofile - self.utils.Tobs.values[::-1]) ** 2)
+        costs = np.mean((Tprofile - Tobs.values[::-1]) ** 2)
+        surface_cost = 16 * np.mean((Tprofile[-1] - Tobs.values[0]) ** 2)
+        costs += surface_cost
 
         self.state = self._get_state()
 
@@ -152,11 +172,9 @@ class RadiativeConvectiveModelEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        rce_state = climlab.column_state(
-            lev=self.utils.Tobs.level[1:], water_depth=2.5
-        )
+        rce_state = climlab.column_state(lev=Tobs.level[1:], water_depth=2.5)
         h2o = climlab.radiation.ManabeWaterVapor(
-            state=rce_state, lev=self.utils.Tobs.level[1:]
+            name="Water Vapour", state=rce_state, lev=Tobs.level[1:]
         )
         rad = climlab.radiation.RRTMG(
             name="Radiation (net)",
@@ -174,7 +192,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
             timestep=rad.timestep,
         )
 
-        self.rcm = climlab.couple([rad, conv], name="RCE Model w/ RL")
+        self.rcm = climlab.couple([h2o, rad, conv], name="RCE Model w/ RL")
 
         # Start from Radiative Equlibrium
         # for n in range(1000):
@@ -197,44 +215,51 @@ class RadiativeConvectiveModelEnv(gym.Env):
         params = self._get_params()
 
         Tprofile_RL = self._get_temp()
-        T_diff_RL = self.utils.Tobs.sel(
+        T_diff_RL = Tobs.sel(level=[100, 200, 1000]) - Tprofile_RL.sel(
             level=[100, 200, 1000]
-        ) - Tprofile_RL.sel(level=[100, 200, 1000])
+        )
         T_diff_RL = np.abs(T_diff_RL)
 
         Tprofile_climlab = self._get_temp(model="climlab")
-        T_diff_climlab = self.utils.Tobs.sel(
+        T_diff_climlab = Tobs.sel(
             level=[100, 200, 1000]
         ) - Tprofile_climlab.sel(level=[100, 200, 1000])
         T_diff_climlab = np.abs(T_diff_climlab)
 
-        # Left subplot: adj_lapse_rate as bar plots
+        # Left subplot: emissivity and adj_lapse_rate as bar plots
         ax1 = fig.add_subplot(gs[0, 0])
 
-        # ax1_labels = ["" for x in range(len(params))]
-        ax1_colors = ["tab:blue" for x in range(len(params))]
-        ax1.bar(
-            range(1, len(params) + 1),
-            params,
+        ax1_labels = [
+            "Emissivity",
+            "Mean Adj Lapse Rate",
+            "Mean Specific Humidity",
+        ]
+        ax1_colors = ["tab:blue", "tab:blue", "tab:blue"]
+        ax1_bars = ax1.bar(
+            ax1_labels,
+            [
+                params[0],
+                np.mean(params[1 : 1 + len(Tobs.level)]),
+                1e3 * np.mean(params[1 + len(Tobs.level) :]),
+            ],
             color=ax1_colors,
             width=0.75,
         )
-        ax1.set_xticks(range(1, len(params) + 1, 2))
         ax1.set_ylim(0, 10)
-        ax1.set_ylabel("Adj Lapse Rate", fontsize=14)
-        # ax1.set_title("Parameters")
+        ax1.set_ylabel("Value", fontsize=14)
+        ax1.set_title("Parameters")
 
         # Add values on top of the bars
-        # for bar in ax1_bars:
-        #     height = bar.get_height()
-        #     ax1.annotate(
-        #         f"{height:.2f}",
-        #         xy=(bar.get_x() + bar.get_width() / 2, height),
-        #         xytext=(0, 3),  # 3 points vertical offset
-        #         textcoords="offset points",
-        #         ha="center",
-        #         va="bottom",
-        #     )
+        for bar in ax1_bars:
+            height = bar.get_height()
+            ax1.annotate(
+                f"{height:.2f}",
+                xy=(bar.get_x() + bar.get_width() / 2, height),
+                xytext=(0, 3),  # 3 points vertical offset
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+            )
 
         if self.locale == "us":
 
@@ -265,22 +290,22 @@ class RadiativeConvectiveModelEnv(gym.Env):
                 color="tab:orange",
             )
             tpg.plot(
-                zip(self.utils.Tobs.level, self.utils.Tobs),
+                zip(Tobs.level, Tobs),
                 color="black",
                 linestyle="-",
                 linewidth=2,
                 label="Observations",
             )
             tpg.axes.legend()
-            # ax2.set_title("Tephigram")
+            ax2.set_title("Tephigram")
             ax2.set_axis_off()
 
         # Right subplot: emissivity and adj_lapse_rate as bar plots
         ax3 = fig.add_subplot(gs[0, 2])
         ax3_bar_width = 0.4
         ax3_labels = [
-            "T_diff @ 100 hPa",
-            "T_diff @ 200 hPa",
+            "T_diff @ 100hPa",
+            "T_diff @ 200hPa",
             "T_diff @ 1000 hPa",
         ]
         ax3_ind = np.arange(1, 1 + len(ax3_labels))
@@ -299,8 +324,8 @@ class RadiativeConvectiveModelEnv(gym.Env):
             width=ax3_bar_width,
         )
         ax3.set_ylim(0, 20)
-        ax3.set_ylabel("Difference ($\degree$C)", fontsize=14)
-        # ax3.set_title("Temperature Differences")
+        ax3.set_ylabel("Difference [$\degree$C]", fontsize=14)
+        ax3.set_title("Temperature Differences")
         ax3.set_xticks(ax3_ind)
         ax3.set_xticklabels(ax3_labels)
         ax3.legend(
@@ -336,8 +361,8 @@ class RadiativeConvectiveModelEnv(gym.Env):
 
     def _make_skewT(self, skew, title=None):
         skew.plot(
-            self.utils.Tobs.level,
-            self.utils.Tobs,
+            Tobs.level,
+            Tobs,
             color="black",
             linestyle="-",
             linewidth=2,
@@ -350,8 +375,8 @@ class RadiativeConvectiveModelEnv(gym.Env):
         skew.plot_moist_adiabats(linewidth=0.5)
 
         skew.ax.legend()
-        skew.ax.set_xlabel("Temperature ($\degree$C)", fontsize=14)
-        skew.ax.set_ylabel("Pressure (hPa)", fontsize=14)
+        skew.ax.set_xlabel("Temperature [$\degree$C]", fontsize=14)
+        skew.ax.set_ylabel("Pressure [hPa]", fontsize=14)
         if title:
             skew.ax.set_title(title)
 

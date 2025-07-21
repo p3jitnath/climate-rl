@@ -16,7 +16,7 @@ repos:
       - id: requirements-txt-fixer
       - id: end-of-file-fixer
       - id: check-added-large-files
-        args: ['--maxkb=2500']
+        args: ['--maxkb=3000']
       - id: trailing-whitespace
 
   - repo: https://github.com/nbQA-dev/nbQA

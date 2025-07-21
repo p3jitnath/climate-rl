@@ -13,5 +13,4 @@ tail -n 10 $(find slurm/ -type f -name '*25922108*.out')
 source ./misc/count.sh
 
 # 4. Scrape an algorithm off the runs/ and videos/ folder
-find runs/ -type d -path '*/*tqc*' -exec rm -r {} +
-find videos/ -type d -path '*/*tqc*' -exec rm -r {} +
+find runs/ videos/ records/ -type d -path '*/infx10_rce17-v2-*tqc*' -exec rm -r {} +
