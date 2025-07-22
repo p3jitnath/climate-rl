@@ -213,7 +213,8 @@ args.minibatch_size = int(args.batch_size // args.num_minibatches)
 run_name = f"{args.wandb_group}/{args.env_id}__{args.exp_name}__{args.seed}__{int(time.time())}"
 
 records_folder = f"{BASE_DIR}/records/{run_name}"
-os.makedirs(records_folder, exist_ok=True)
+if not args.optimise:
+    os.makedirs(records_folder, exist_ok=True)
 rs = RecordSteps(records_folder, args.optimise)
 
 if args.track:
