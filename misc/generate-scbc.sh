@@ -25,6 +25,7 @@ for run in "${runs[@]}"; do
 #SBATCH --account=ai4er
 #SBATCH --partition=standard
 #SBATCH --qos=high
+#SBATCH --nodelist=host[1201-1272]
 
 conda activate venv
 python $BASE_DIR/misc/generate_results-scbc.py --exp_id $exp_id

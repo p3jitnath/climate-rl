@@ -16,6 +16,7 @@
 ## SBATCH --account=ai4er
 ## SBATCH --partition=standard
 ## SBATCH --qos=high
+## SBATCH --nodelist=host[1201-1272]
 
 ## SBATCH --account=orchid
 ## SBATCH --partition=orchid
@@ -101,22 +102,24 @@ head_node_ip=$(srun --nodes=1 --ntasks=1 -w "$head_node" hostname --ip-address)
 # if we detect a space character in the head node IP, we'll
 # convert it to an ipv4 address. This step is optional.
 if [[ "$head_node_ip" == *" "* ]]; then
-IFS=' ' read -ra ADDR <<<"$head_node_ip"
-if [[ ${#ADDR[0]} -gt 16 ]]; then
-  head_node_ip=${ADDR[1]}
-else
-  head_node_ip=${ADDR[0]}
-fi
-echo "IPV6 address detected. We split the IPV4 address as $head_node_ip"
+    IFS=' ' read -ra ADDR <<<"$head_node_ip"
+    if [[ ${#ADDR[0]} -gt 16 ]]; then
+        head_node_ip=${ADDR[1]}
+    else
+        head_node_ip=${ADDR[0]}
+    fi
+    echo "IPv6 address detected. We split the IPv4 address as $head_node_ip"
 fi
 
 # __doc_head_address_end__
 
-port=$(shuf -i 6380-6580 -n 1)
+hrand=$(od -An -N4 -tu4 /dev/urandom | tr -d ' ')
+port=$(shuf -i 6381-12580 -n 1)
+port=$((port + (hrand % 1000)))
 
-k=$(shuf -i 20-55 -n 1)
+k=$(shuf -i 30-55 -n 1)
 min_port=$((k * 1000))
-max_port=$((min_port + 999))
+max_port=$((min_port + 99))
 
 ip_head=$head_node_ip:$port
 export ip_head

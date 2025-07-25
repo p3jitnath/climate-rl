@@ -20,7 +20,6 @@ for top_dir in "$BASE_DIR"/records/*/; do
     run_name=$(basename "$top_dir")
     printf "%-50s" "$run_name"
     for algo in "${ALGOS[@]}"; do
-        count=$(find "$top_dir" -mindepth 1 -maxdepth 1 -type d -name "*_${algo}_*" | wc -l)
         if [[ "$run_name" == *infx10* ]]; then
             if [[ "$run_name" == *rce* ]]; then
                 step_file="step_500.pth"
