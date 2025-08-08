@@ -172,6 +172,7 @@ cython_debug/
 *.zip
 *.gif
 *.png
+*.pdf
 *.tmp
 
 records/

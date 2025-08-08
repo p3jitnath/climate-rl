@@ -29,7 +29,7 @@ set -x
 
 # 1a. Function to display usage
 usage() {
-    echo "Usage: sbatch script.sh --algo <algo> --exp_id <exp_id> --env_id <env_id> --opt_timesteps <steps> --num_steps <steps> [--homo64]"
+    echo "Usage: sbatch tune_slurm.sh --algo <algo> --exp_id <exp_id> --env_id <env_id> --opt_timesteps <steps> --num_steps <steps> [--homo64]"
     exit 1
 }
 

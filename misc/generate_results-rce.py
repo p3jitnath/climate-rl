@@ -237,9 +237,10 @@ plt.yscale("log")
 plt.legend()
 ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func))
 
-plt.savefig(
-    f"{IMGS_DIR}/{EXP_ID}_log10_top{TOP_K}_episodic_returns.png",
-    dpi=300,
-    bbox_inches="tight",
-)
+for ext in ["pdf", "png"]:
+    plt.savefig(
+        f"{IMGS_DIR}/{ext}/{EXP_ID}_log10_top{TOP_K}_episodic_returns.{ext}",
+        dpi=300,
+        bbox_inches="tight",
+    )
 # plt.show()

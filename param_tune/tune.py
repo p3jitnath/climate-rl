@@ -45,16 +45,7 @@ def objective(config):
     cmd = f"""python -u {BASE_DIR}/rl-algos/{args.algo}/main.py --env_id {args.env_id} --optimise --opt_timesteps {args.opt_timesteps} --num_steps {args.num_steps} --write-to-file {results_path} """
     for param in config["params"]:
         if param == "actor_critic_layer_size":
-            actor_layer_size = (
-                args.actor_layer_size
-                if args.actor_layer_size
-                else config["params"][param]
-            )
-            critic_layer_size = (
-                args.critic_layer_size
-                if args.critic_layer_size
-                else config["params"][param]
-            )
+            actor_layer_size = critic_layer_size = config["params"][param]
             cmd += f"""--actor_layer_size {actor_layer_size} """
             cmd += f"""--critic_layer_size {critic_layer_size} """
         else:
@@ -66,7 +57,7 @@ def objective(config):
     while not os.path.exists(results_path):
         time.sleep(15)
         counter += 1
-        if counter >= 3 * 60 * (60 / 15):
+        if counter >= 3 * 60 * (60 // 15):
             raise RuntimeError(
                 "An error has occured. Refer to tune.py source."
             )
@@ -82,10 +73,28 @@ args = tyro.cli(Args)
 date = time.strftime("%Y-%m-%d", time.gmtime(time.time()))
 
 search_space = config[args.algo]
+if args.actor_layer_size and args.critic_layer_size:
+    search_space["actor_critic_layer_size"] = tune.choice(
+        [args.actor_layer_size]
+    )
 search_alg = OptunaSearch(seed=42)
 
 ray_kwargs = {}
-ray_kwargs["runtime_env"] = {"working_dir": BASE_DIR, "conda": "venv"}
+ray_kwargs["runtime_env"] = {
+    "working_dir": BASE_DIR,
+    "conda": "venv",
+    "excludes": [
+        "runs/",
+        "records/",
+        "videos/",
+        "results/",
+        "wandb/",
+        "notebooks/",
+        "archive/" "slurm/",
+        ".git/",
+    ],
+}
+ray_kwargs["include_dashboard"] = False
 try:
     if os.environ["ip_head"]:
         ray_kwargs["address"] = os.environ["ip_head"]
