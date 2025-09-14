@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Nath"
+  given-names: "Pritthijit"
+  orcid: "https://orcid.org/0009-0002-1648-4444"
+- family-names: "Moss"
+  given-names: "Henry"
+  orcid: "https://orcid.org/0000-0003-0427-7675"
+- family-names: "Shuckburgh"
+  given-names: "Emily"
+  orcid: "https://orcid.org/0000-0001-9206-3444"
+- family-names: "Webb"
+  given-names: "Mark"
+  orcid: "https://orcid.org/0000-0002-7709-7088"
+title: "RAIN: Reinforcement Algorithms for Improving Numerical Weather and Climate Models"
+version: 1.0.0
+doi: 10.48550/arXiv.2408.16118
+date-released: 2024-08-28
+url: "https://github.com/p3jitnath/climate-rl"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Nath"
+    given-names: "Pritthijit"
+    orcid: "https://orcid.org/0009-0002-1648-4444"
+  - family-names: "Moss"
+    given-names: "Henry"
+    orcid: "https://orcid.org/0000-0003-0427-7675"
+  - family-names: "Shuckburgh"
+    given-names: "Emily"
+    orcid: "https://orcid.org/0000-0001-9206-3444"
+  - family-names: "Webb"
+    given-names: "Mark"
+    orcid: "https://orcid.org/0000-0002-7709-7088"
+  doi: "10.48550/arXiv.2408.16118"
+  title: "RAIN: Reinforcement Algorithms for Improving Numerical Weather and Climate Models"
+  journal: "arXiv preprint arXiv:2408.16118"
+  month: 8
+  year: 2024
