@@ -20,24 +20,26 @@
 
 
 # RAIN: Reinforcement Algorithms for Improving Numerical Weather and Climate Models
-[![arXiv](https://img.shields.io/badge/cs.LG-2408.16118-b31b1b?logo=arXiv&logoColor=red)](https://arxiv.org/abs/2408.16118) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11960239.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing)
+[![arXiv](https://img.shields.io/badge/cs.LG-2408.16118-b31b1b?logo=arXiv&logoColor=red)](https://arxiv.org/abs/2408.16118) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17116349.svg)](https://doi.org/10.5281/zenodo.11960239) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1RhgvX5JXzvrH3LB_wJvcOkqjZRkoTvDA/view?usp=sharing)
 
-This GitHub repository contains the code, data, and figures for the paper **RAIN: Reinforcement Algorithms for Improving Numerical Weather and Climate Models** ([arXiv](https://arxiv.org/abs/2408.16118), [MRes Report](https://drive.google.com/drive/folders/1i8S03_6a_B_y1GjFjJV9OxePbENxxeJz?usp=drive_link)).
+This GitHub repository contains the code, data, and figures for the paper **RAIN: Reinforcement Algorithms for Improving Numerical Weather and Climate Models**.
 
 ## Overview
 
-This study explores the integration of reinforcement learning (RL) with idealised climate models, marking a good first effort in AI-assisted climate modelling. Utilising 16 experiments across 8 prominent continuous action, model-free RL algorithms (REINFORCE, DDPG, DPG, TD3, PPO, TRPO, SAC, TQC), the study examines two distinct RL environments: Simple Climate Bias Correction and Radiative-Convective Equilibrium. Performed on the JASMIN HPC, the findings demonstrate the effectiveness of off-policy exploration heavy algorithms like DDPG, TD3, and TQC in Simple Climate Bias Correction, and on-policy exploitation centric algorithms like DPG, PPO, and TRPO in Radiative-Convective Equilibrium. Results show significant bias reductions up to 90%, underscoring the potential of RL-based parameterisation in enhancing the accuracy and efficiency of global climate models.
+This study investigates how reinforcement learning (RL) can improve parameterisation in idealised climate models, addressing uncertainties from unresolved sub-grid processes. We benchmark eight RL algorithms on two testbeds: temperature bias correction and radiative–convective equilibrium (RCE), finding that exploration-based methods perform better for bias correction, while exploitation-focused methods excel in RCE. The results highlight RL’s potential for enhancing climate model accuracy and efficiency, offering a step towards integrating adaptive parameterisations into global models.
 
 ## Project Structure
 
 ```
 climate-rl/
 │
+├── assets/                 # README.md assets
 ├── climate-envs/           # Gymansium-based climate environments used in the project
 ├── datasets/               # Dataset files used in simulations
 ├── misc/                   # Script files for batch-processing runs on JASMIN
 ├── notebooks/              # Jupyter notebooks for data analysis and results visualization
 ├── param_tune/             # Code for Ray-powered parameter tuning via multiple parallel batch jobs
+├── results/                # Results (imgs and tables) for documentation
 ├── rl-algos/               # cleanRL-styled source code for RL models
 ├──.editorconfig            # Config file for code editor specific settings
 ├──.gitignore               # Config file to skip certain files from version control
@@ -75,16 +77,16 @@ To set up the project environment, follow these steps:
 
 5. [Optional] Download runs:
     ```bash
-    wget https://zenodo.org/records/11960239/files/runs_2024-06-17_15-38.zip
-    unzip -qq runs_2024-06-17_15-38.zip -d runs
-    rm -rf runs_2024-06-17_15-38.zip
+    wget https://zenodo.org/records/17116349/files/scbc-rce_runs_2025-09-13.zip
+    unzip -qq scbc-rce_runs_2025-09-13.zip
+    rm -rf scbc-rce_runs_2025-09-13.zip
     ```
 
 ## Usage
 
-1. To run an RL algorithm (for eg. DDPG) with an environment (for eg. `RadiativeConvectiveModel-v0`) over 15000 timesteps with 500 steps in each episode.
+1. To run an RL algorithm (for eg. DDPG) with an environment (for eg. `RadiativeConvectiveModel-v0`) over 10000 timesteps with 500 steps in each episode.
 ```
-python ./rl-algos/ddpg/main.py --env_id "RadiativeConvectiveModel-v0" --total_timesteps 15000 --num-steps 500
+python ./rl-algos/ddpg/main.py --env_id "RadiativeConvectiveModel-v0" --total_timesteps 10000 --num-steps 500
 ```
 > [!NOTE]
 > Max. value for `num-steps` can be found [here](/climate-envs/climate_envs/__init__.py).
