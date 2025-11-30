@@ -55,7 +55,7 @@ class RadiativeConvectiveModelEnv(gym.Env):
         self.max_temperature = 90
 
         self.min_specific_humidity = 0
-        self.max_specific_humidity = 5
+        self.max_specific_humidity = 5  # * 1e-3 kg/kg (assuming 50% RH @ 15°C)
 
         self.min_temperature = -90
         self.max_temperature = 90
